@@ -263,8 +263,44 @@ _W.setup_model_rpc({"rpc_namespace":"_W.CustomerAccounts.RPC","model_namespace":
         <div class="wsite-section-elements">
           <div id="cassxp-theme-song" style="max-width:700px;margin:0 auto;text-align:center;padding:0 15px">
             <h2 class="wsite-content-title" style="color:#fff;text-align:center;font-size:27px">Música do site 🎵</h2>
-            <p class="paragraph" style="color:#e7ddea;text-align:center;margin-bottom:12px">7 rings — Ariana Grande. Aperte o play no player oficial do Spotify para ouvir enquanto visita a página.</p>
-            <iframe src="https://open.spotify.com/embed/track/6ocbgoVGwYJhOv1GgI9NsF?utm_source=generator&amp;theme=0" title="Ouça 7 rings de Ariana Grande no Spotify" width="100%" height="152" style="border:0;border-radius:12px;display:block;max-width:640px;margin:0 auto" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="eager"></iframe>
+            <p class="paragraph" style="color:#e7ddea;text-align:center;margin-bottom:12px">7 rings — Ariana Grande. O site tenta iniciar a música automaticamente. Se seu navegador bloquear, basta tocar em qualquer área da página; você também pode usar os controles do Spotify.</p>
+            <div id="cassxp-spotify-embed" style="width:100%;max-width:640px;height:152px;margin:0 auto"></div>
+            <p id="cassxp-spotify-status" role="status" aria-live="polite" style="font-size:13px;color:#cbbbd0;text-align:center;margin:9px 0 0">Tentando iniciar a música...</p>
+            <script>
+              (function () {
+                var musicStarted = false;
+                var spotifyController = null;
+                var statusElement = document.getElementById('cassxp-spotify-status');
+                function startMusic() {
+                  if (musicStarted || !spotifyController) return;
+                  spotifyController.play();
+                }
+                window.onSpotifyIframeApiReady = function (IFrameAPI) {
+                  var host = document.getElementById('cassxp-spotify-embed');
+                  if (!host) return;
+                  IFrameAPI.createController(host, {
+                    uri: 'spotify:track:6ocbgoVGwYJhOv1GgI9NsF',
+                    width: '100%',
+                    height: 152
+                  }, function (controller) {
+                    spotifyController = controller;
+                    controller.addListener('ready', function () {
+                      startMusic();
+                    });
+                    controller.addListener('playback_started', function () {
+                      musicStarted = true;
+                      if (statusElement) statusElement.textContent = 'Música em reprodução. Você pode controlar o áudio no Spotify.';
+                      document.removeEventListener('pointerdown', startMusic, false);
+                      document.removeEventListener('keydown', startMusic, false);
+                    });
+                  });
+                };
+                // A primeira interação pode autorizar o som quando o navegador bloqueia a reprodução automática.
+                document.addEventListener('pointerdown', startMusic, false);
+                document.addEventListener('keydown', startMusic, false);
+              }());
+            </script>
+            <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
           </div>
         </div>
       </div>
