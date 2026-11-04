@@ -263,53 +263,66 @@ _W.setup_model_rpc({"rpc_namespace":"_W.CustomerAccounts.RPC","model_namespace":
         <div class="wsite-section-elements">
           <div id="cassxp-theme-song" style="max-width:720px;margin:0 auto;text-align:center;padding:0 15px">
             <h2 class="wsite-content-title" style="color:#fff;text-align:center;font-size:27px">Música do site 🎵</h2>
-            <p class="paragraph" style="color:#e7ddea;text-align:center;margin-bottom:12px">7 rings — Ariana Grande. A reprodução será iniciada automaticamente quando o navegador permitir. Você pode pausar ou ajustar o volume abaixo.</p>
-            <audio id="cassxp-background-music" controls loop autoplay preload="auto" style="display:block;width:100%;max-width:640px;margin:0 auto">
+            <p class="paragraph" style="color:#e7ddea;text-align:center;margin-bottom:12px">7 rings — Ariana Grande. Quando o arquivo MP3 estiver publicado, o site tentará iniciar a música automaticamente, com volume baixo e repetição.</p>
+            <audio id="cassxp-background-music" controls loop preload="none" style="display:none;width:100%;max-width:640px;margin:0 auto">
               <source src="/7-rings.mp3" type="audio/mpeg" />
               Seu navegador não suporta reprodução de áudio HTML5.
             </audio>
-            <p id="cassxp-music-message" role="status" aria-live="polite" style="font-size:13px;color:#cbbbd0;text-align:center;margin:10px 0 0">Tentando reproduzir a música. Alguns navegadores só permitem iniciar o som após um toque na página.</p>
-            <div id="cassxp-music-fallback" style="display:none;margin:16px auto 0">
-              <p class="paragraph" style="color:#e7ddea;text-align:center">O arquivo MP3 ainda não está disponível neste servidor. Enquanto isso, você pode assistir pelo YouTube:</p>
-              <iframe title="7 rings — Ariana Grande no YouTube" src="https://www.youtube.com/embed/uDAjINEp8H8?playsinline=1" width="720" height="405" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin" style="display:block;width:100%;aspect-ratio:16/9;min-height:225px;border:0;border-radius:12px"></iframe>
+            <div id="cassxp-music-fallback" style="display:block;margin:12px auto">
+              <p class="paragraph" style="color:#e7ddea;text-align:center">O MP3 ainda não foi enviado ao GitHub. Enquanto isso, assista pelo YouTube:</p>
+              <iframe title="7 rings — Ariana Grande no YouTube" src="https://www.youtube.com/embed/uDAjINEp8H8?autoplay=1&amp;mute=0&amp;loop=1&amp;playlist=uDAjINEp8H8&amp;playsinline=1" width="720" height="405" loading="lazy" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin" style="display:block;width:100%;aspect-ratio:16/9;min-height:225px;border:0;border-radius:12px;margin:0 auto"></iframe>
+              <p style="font-size:13px;color:#cbbbd0;text-align:center;margin:10px 0 0">O som automático pode ser bloqueado pelo navegador. Se necessário, aperte Play no vídeo.</p>
             </div>
+            <p id="cassxp-music-message" role="status" aria-live="polite" style="font-size:13px;color:#cbbbd0;text-align:center;margin:10px 0 0"></p>
             <script>
               (function () {
                 var music = document.getElementById('cassxp-background-music');
-                var message = document.getElementById('cassxp-music-message');
                 var fallback = document.getElementById('cassxp-music-fallback');
+                var message = document.getElementById('cassxp-music-message');
                 if (!music) return;
-                var sourceMissing = false;
                 music.volume = 0.3;
-                function playMusic() {
-                  if (sourceMissing || !music.paused) return;
-                  var result = music.play();
-                  if (result && typeof result.catch === 'function') {
-                    result.catch(function () {
-                      if (!sourceMissing && message) {
-                        message.textContent = 'O navegador bloqueou o som automático. Toque na página ou aperte Play para ouvir.';
-                      }
+                function tryPlay() {
+                  if (!music.paused) return;
+                  var attempt = music.play();
+                  if (attempt && typeof attempt.catch === 'function') {
+                    attempt.catch(function () {
+                      if (message) message.textContent = 'O navegador bloqueou a reprodução automática com som. Toque na página ou aperte Play no áudio.';
                     });
                   }
                 }
-                function useFallback() {
-                  if (sourceMissing) return;
-                  sourceMissing = true;
+                function enableMP3() {
+                  if (fallback) {
+                    var embedded = fallback.querySelector('iframe');
+                    if (embedded) embedded.removeAttribute('src');
+                    fallback.style.display = 'none';
+                  }
+                  music.style.display = 'block';
+                  music.preload = 'auto';
+                  music.load();
+                  tryPlay();
+                  document.addEventListener('pointerdown', tryPlay);
+                  document.addEventListener('keydown', tryPlay);
+                  music.addEventListener('playing', function () {
+                    if (message) message.textContent = 'Áudio em reprodução. Ajuste o volume ou pause no controle acima.';
+                  });
+                }
+                function showFallback() {
                   music.style.display = 'none';
                   if (fallback) fallback.style.display = 'block';
-                  if (message) message.textContent = 'MP3 ainda não publicado. O vídeo do YouTube está disponível abaixo.';
-                  document.removeEventListener('pointerdown', playMusic);
-                  document.removeEventListener('keydown', playMusic);
+                  if (message) message.textContent = 'O MP3 ainda não está disponível neste endereço.';
                 }
-                music.addEventListener('error', useFallback);
-                music.addEventListener('playing', function () {
-                  if (message) message.textContent = '7 rings está tocando. Use o controle acima para pausar ou ajustar o volume.';
-                });
-                music.addEventListener('canplay', playMusic);
-                document.addEventListener('pointerdown', playMusic);
-                document.addEventListener('keydown', playMusic);
-                if (music.error) useFallback();
-                else playMusic();
+                music.addEventListener('error', showFallback);
+                fetch('/7-rings.mp3', { method: 'HEAD', cache: 'no-store' })
+                  .then(function (response) {
+                    if (response.ok && (response.headers.get('content-type') || '').toLowerCase().indexOf('audio/') !== -1) {
+                      enableMP3();
+                    } else if (response.ok) {
+                      enableMP3();
+                    } else {
+                      showFallback();
+                    }
+                  })
+                  .catch(showFallback);
               }());
             </script>
           </div>
