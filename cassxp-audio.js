@@ -54,7 +54,7 @@
       '<input id="cassxp-music-volume" type="range" min="0" max="100" value="55" ' +
       'aria-label="Volume da música">' +
       '<span id="cassxp-music-status" role="status" aria-live="polite"></span>' +
-      '<audio id="cassxp-background-music" loop preload="auto" playsinline></audio>';
+      '<audio id="cassxp-background-music" autoplay loop preload="auto" playsinline></audio>';
     document.body.appendChild(holder);
 
     var audio = holder.querySelector('audio');
@@ -64,7 +64,8 @@
     var savedVolume = Number(stored('volume'));
     var volume = stored('volume') !== null && isFinite(savedVolume)
       ? Math.max(0, Math.min(100, savedVolume)) : 55;
-    var pausedByUser = stored('paused') === '1';
+    // Pausas só valem na navegação atual; uma nova visita tenta tocar novamente.
+    var pausedByUser = false;
     var lastSavedSecond = -1;
     slider.value = String(volume);
     audio.volume = volume / 100;
@@ -100,11 +101,9 @@
     toggle.addEventListener('click', function () {
       if (audio.paused) {
         pausedByUser = false;
-        save('paused', '0');
         playMusic();
       } else {
         pausedByUser = true;
-        save('paused', '1');
         audio.pause();
         show('');
       }
@@ -153,7 +152,10 @@
       startAtFirstGesture(event);
     }, true);
     updateButton();
-    if (!pausedByUser) playMusic();
+    playMusic();
+    window.addEventListener('pageshow', function () {
+      if (!pausedByUser && audio.paused) playMusic();
+    });
   }
 
   function updateMetadata(next) {
