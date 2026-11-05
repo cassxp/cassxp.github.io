@@ -256,7 +256,7 @@ _W.setup_model_rpc({"rpc_namespace":"_W.CustomerAccounts.RPC","model_namespace":
       </div>
       <div id="main">
         <div id="wsite-content" class="wsite-elements wsite-not-footer">
-<!-- Player compacto de música: não ocupa espaço no conteúdo da página -->
+<!-- Player compacto de música: reprodução automática quando permitida, com início na primeira interação como alternativa -->
 <style>
   #cassxp-mini-music {
     position:fixed; right:16px; bottom:16px; z-index:9998;
@@ -273,21 +273,21 @@ _W.setup_model_rpc({"rpc_namespace":"_W.CustomerAccounts.RPC","model_namespace":
   #cassxp-mini-music button:focus-visible, #cassxp-mini-music input:focus-visible {outline:2px solid #fff; outline-offset:2px}
   #cassxp-mini-music input[type=range] {width:76px; cursor:pointer; accent-color:#c28ada; margin:0}
   #cassxp-mini-music .cassxp-music-note {font-size:18px; line-height:1}
-  #cassxp-music-status {font-size:11px; color:#f2ced9; white-space:nowrap; max-width:170px; overflow:hidden; text-overflow:ellipsis}
+  #cassxp-music-status {font-size:11px; color:#f2ced9; white-space:nowrap; max-width:154px; overflow:hidden; text-overflow:ellipsis}
   #cassxp-music-status:empty {display:none}
   @media(max-width:480px) {
     #cassxp-mini-music {right:10px; bottom:10px; padding:6px 9px; gap:7px}
     #cassxp-mini-music input[type=range] {width:58px}
-    #cassxp-music-status {max-width:110px}
+    #cassxp-music-status {max-width:92px}
   }
 </style>
 <div id="cassxp-mini-music" aria-label="Controle de música">
   <span class="cassxp-music-note" aria-hidden="true">♫</span>
   <button id="cassxp-music-toggle" type="button" aria-label="Reproduzir música" title="Reproduzir/Pausar">▶</button>
   <span aria-hidden="true">🔊</span>
-  <input id="cassxp-music-volume" type="range" min="0" max="100" value="30" aria-label="Volume da música">
+  <input id="cassxp-music-volume" type="range" min="0" max="100" value="55" aria-label="Volume da música">
   <span id="cassxp-music-status" role="status" aria-live="polite"></span>
-  <audio id="cassxp-background-music" loop preload="none"><source src="/7-rings.mp3" type="audio/mpeg"></audio>
+  <audio id="cassxp-background-music" src="/7-rings.mp3?v=20261104" loop preload="auto" playsinline></audio>
 </div>
 <script>
 (function () {
@@ -295,47 +295,86 @@ _W.setup_model_rpc({"rpc_namespace":"_W.CustomerAccounts.RPC","model_namespace":
   var toggle = document.getElementById('cassxp-music-toggle');
   var slider = document.getElementById('cassxp-music-volume');
   var status = document.getElementById('cassxp-music-status');
-  if (!audio || !toggle || !slider) return;
-  var available = null;
-  audio.volume = 0.3;
-  function setStatus(value) { status.textContent = value || ''; }
+  if (!audio || !toggle || !slider || !status) return;
+
+  var pausedByUser = false;
+  var unavailable = false;
+  audio.volume = 0.55;
+  audio.muted = false;
+
+  function setStatus(message) { status.textContent = message || ''; }
   function updateButton() {
-    var playing = !audio.paused;
+    var playing = !audio.paused && !audio.ended;
     toggle.textContent = playing ? 'Ⅱ' : '▶';
     toggle.setAttribute('aria-label', playing ? 'Pausar música' : 'Reproduzir música');
+    toggle.setAttribute('aria-pressed', playing ? 'true' : 'false');
   }
-  function tryPlay() {
-    if (available === false) {
-      setStatus('MP3 ainda não publicado');
-      return;
-    }
-    var p = audio.play();
-    if (p && typeof p.catch === 'function') {
-      p.catch(function (error) {
-        updateButton();
-        setStatus(error && error.name === 'NotAllowedError' ? 'Toque em Play para ouvir' : 'Áudio indisponível');
-      });
+
+  function playMusic() {
+    if (pausedByUser || unavailable || !audio.paused) return;
+    try {
+      var result = audio.play();
+      if (result && typeof result.catch === 'function') {
+        result.catch(function (error) {
+          updateButton();
+          if (!audio.paused) return;
+          if (error && error.name === 'NotAllowedError') {
+            setStatus('Ative o som no ▶');
+          } else if (!error || error.name !== 'AbortError') {
+            setStatus('Áudio indisponível');
+          }
+        });
+      }
+    } catch (error) {
+      setStatus('Toque em ▶ para ouvir');
     }
   }
+
   toggle.addEventListener('click', function () {
-    if (audio.paused) tryPlay();
-    else audio.pause();
+    if (audio.paused) {
+      pausedByUser = false;
+      unavailable = false;
+      playMusic();
+    } else {
+      pausedByUser = true;
+      audio.pause();
+      setStatus('');
+    }
   });
+
   slider.addEventListener('input', function () {
     audio.volume = Number(slider.value) / 100;
     audio.muted = false;
+    if (!pausedByUser) playMusic();
   });
-  audio.addEventListener('playing', function () { setStatus(''); updateButton(); });
+
+  audio.addEventListener('playing', function () {
+    setStatus('');
+    updateButton();
+  });
   audio.addEventListener('pause', updateButton);
-  audio.addEventListener('error', function () { available = false; setStatus('MP3 ainda não publicado'); updateButton(); });
-  fetch('/7-rings.mp3', {method:'HEAD', cache:'no-store'})
-    .then(function (r) {
-      available = r.ok;
-      if (available) { audio.preload = 'auto'; tryPlay(); }
-      else { setStatus('MP3 ainda não publicado'); }
-    })
-    .catch(function () { available = null; });
+  audio.addEventListener('error', function () {
+    unavailable = true;
+    setStatus('Erro ao carregar MP3');
+    updateButton();
+  });
+
+  // A maioria dos navegadores não permite música com som antes de um gesto.
+  // Caso o autoplay seja bloqueado, o primeiro toque/clique/tecla na página inicia o áudio.
+  function startOnInteraction(event) {
+    if (pausedByUser || unavailable || !audio.paused) return;
+    if (event.target && event.target.closest && event.target.closest('#cassxp-mini-music')) return;
+    playMusic();
+  }
+  document.addEventListener('pointerdown', startOnInteraction, true);
+  document.addEventListener('touchstart', startOnInteraction, {capture:true, passive:true});
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Tab' || event.key === 'Shift' || event.key === 'Control' || event.key === 'Alt' || event.key === 'Meta') return;
+    startOnInteraction(event);
+  }, true);
+
   updateButton();
+  playMusic();
 }());
 </script>
 <div class="wsite-section-wrap">
