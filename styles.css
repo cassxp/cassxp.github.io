@@ -56,7 +56,7 @@
 @media(max-width:500px){.cass-about-links{grid-template-columns:1fr}.cass-about-copy p{font-size:14px}.cass-about-logo{min-height:240px}.cass-about-halo{width:155px}}
 
 
-/* Jornada de Jade · Bloodlines RP */
+/* Prévia: nova seção Jornada de Jade – visual Bloodlines, sem alterar site publicado */
 .jade-journey-section{padding-top:72px;padding-bottom:80px}
 .jade-journey-intro{text-align:center;max-width:800px;margin:0 auto 32px}
 .jade-journey-intro .eyebrow{font-size:11px;letter-spacing:2.1px;color:#db9bf8;font-weight:800}
@@ -68,7 +68,7 @@
 .jade-journey-visual{min-height:530px;position:relative;isolation:isolate;overflow:hidden;background:radial-gradient(ellipse at 50% 44%,#9a3e9e55 0%,#34133a 40%,#120a1c 72%)}
 .jade-journey-visual:before{content:"";position:absolute;inset:0;z-index:1;background:radial-gradient(ellipse at 46% 34%,transparent 10%,#12071e11 55%,#0d071b99 93%),linear-gradient(0deg,#10091a 0%,transparent 29%);pointer-events:none}
 .jade-journey-visual:after{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;opacity:.56;background-image:radial-gradient(circle at 18% 12%,#fbc0ff 0 1px,transparent 2px),radial-gradient(circle at 77% 25%,#b777ff 0 2px,transparent 3px),radial-gradient(circle at 23% 63%,#f3a9ff 0 1px,transparent 2px),radial-gradient(circle at 80% 82%,#f3a9ff 0 1px,transparent 2px)}
-.jade-journey-visual img{position:absolute;z-index:2;bottom:0;left:50%;transform:translateX(-50%);height:100%;width:100%;max-width:none;object-fit:cover;object-position:center 46%;filter:drop-shadow(0 3px 26px #c63ca044)}
+.jade-journey-visual img{position:absolute;z-index:2;bottom:0;left:50%;transform:translateX(-50%);height:94%;width:auto;max-width:none;object-fit:contain;filter:drop-shadow(0 3px 26px #c63ca044)}
 .jade-journey-orbit{position:absolute;left:50%;top:43%;transform:translate(-50%,-50%);width:min(91%,470px);aspect-ratio:1;border-radius:50%;border:1px solid #cb70e1b0;box-shadow:0 0 24px #ae2de777,inset 0 0 31px #d85bee22;z-index:0}
 .jade-journey-orbit.inner{width:min(75%,360px);top:45%;border-style:dashed;opacity:.58;transform:translate(-50%,-50%) rotate(16deg)}
 .jade-journey-symbol{position:absolute;z-index:3;top:9%;left:8%;font-family:Georgia,serif;font-size:60px;color:#f1b1ff;text-shadow:0 0 22px #d673ff;opacity:.9}
@@ -89,30 +89,79 @@
 .jade-journey-footnote span{color:#bb65ed;font-size:17px}
 .jade-journey-footnote p{margin:0}
 @media(max-width:900px){.jade-journey-feature{grid-template-columns:minmax(260px,.85fr) minmax(350px,1.15fr)}.jade-journey-copy{padding:35px 30px}.jade-journey-visual{min-height:520px}}
-@media(max-width:720px){.jade-journey-section{padding-top:60px;padding-bottom:62px}.jade-journey-intro{margin-bottom:22px}.jade-journey-feature{grid-template-columns:1fr}.jade-journey-visual{min-height:415px}.jade-journey-visual img{height:100%;object-position:center 44%}.jade-journey-copy{padding:30px 24px 35px}.jade-journey-copy h3{font-size:35px}.jade-journey-footnote{padding:0 15px}.jade-journey-symbol{top:10%;left:12%}}
+@media(max-width:720px){.jade-journey-section{padding-top:60px;padding-bottom:62px}.jade-journey-intro{margin-bottom:22px}.jade-journey-feature{grid-template-columns:1fr}.jade-journey-visual{min-height:415px}.jade-journey-visual img{height:98%}.jade-journey-copy{padding:30px 24px 35px}.jade-journey-copy h3{font-size:35px}.jade-journey-footnote{padding:0 15px}.jade-journey-symbol{top:10%;left:12%}}
 @media(max-width:400px){.jade-journey-visual{min-height:345px}.jade-journey-copy h3{font-size:30px}.jade-journey-tags span{font-size:10px}}
 
+/* Ajustes de fidelidade: mockup aprovado 'A jornada de Jade' */
+.jade-bloodlines-page .header-row{width:min(1430px,calc(100% - 10%))}
+.jade-bloodlines-page .site-header{background:#120a1c;border-bottom:1px solid #71408366}
+.jade-bloodlines-page .jade-journey-section{position:relative;isolation:isolate;overflow:hidden;padding:22px 0 58px;background:
+ radial-gradient(ellipse 680px 230px at 4% 31%,#63287964,transparent 74%),radial-gradient(ellipse 680px 280px at 98% 30%,#5a286c5e,transparent 78%),
+ radial-gradient(ellipse 800px 570px at 50% 62%,#320d466b,transparent 78%),linear-gradient(180deg,#17091e 0%,#12091d 48%,#160a22 100%)}
+.jade-journey-section>.container{width:min(1454px,calc(100% - 11.8%));max-width:none;position:relative;z-index:2}
+.jade-journey-section .jade-atmosphere{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.38;overflow:hidden}
+.jade-atmosphere span{position:absolute;top:85px;width:480px;height:195px;background:linear-gradient(176deg,transparent 50%,#090614 51%),linear-gradient(140deg,transparent 50%,#261535 51%);clip-path:polygon(0 100%,15% 70%,24% 40%,35% 60%,50% 18%,64% 65%,79% 31%,100% 100%);filter:blur(2px)}
+.jade-atmosphere span:first-child{left:-100px}.jade-atmosphere span:last-child{right:-100px;transform:scaleX(-1)}
+.jade-bloodlines-page .jade-journey-intro{max-width:none;margin:0 auto 28px;text-align:center}
+.jade-journey-intro .eyebrow{font-size:13px;font-weight:650;letter-spacing:.25px;color:#d4a1ea}
+.jade-journey-intro h2{margin:8px 0 1px;font-size:clamp(43px,4.1vw,59px);letter-spacing:-.05em;line-height:1.13;font-weight:760}
+.jade-journey-intro h2 em{font-family:Georgia,serif;letter-spacing:-.04em;font-weight:500;font-style:italic;background:none;color:#d89ce9}
+.jade-journey-subtitle{display:flex;align-items:center;justify-content:center;gap:22px;color:#e2a3f0;margin-top:2px;font-size:30px;line-height:1.1}
+.jade-journey-subtitle em{font-weight:400;font-style:italic;white-space:nowrap}
+.jade-journey-subtitle span{width:min(145px,16vw);height:2px;background:linear-gradient(90deg,transparent,#d17def)}
+.jade-journey-subtitle span:last-child{transform:scaleX(-1)}
+.jade-bloodlines-page .jade-journey-feature{display:grid;grid-template-columns:49.2% 50.8%;min-height:0;height:578px;border-radius:24px;border:2px solid #d18ce5;box-shadow:0 0 0 1px #7c2ea5aa,0 0 32px #a044c440,0 24px 60px #05030a88;background:#1b1026;overflow:hidden}
+.jade-bloodlines-page .jade-journey-visual{position:relative;min-height:0;height:100%;overflow:hidden;background:#1c1523}
+.jade-bloodlines-page .jade-journey-visual img{position:absolute;inset:0;width:100%;height:100%;max-width:none;object-fit:cover;object-position:center 46%;filter:none;transform:scale(1.22);transform-origin:50% 44%;z-index:1}
+.jade-bloodlines-page .jade-journey-visual:before{background:linear-gradient(90deg,#1b0c2c16,transparent 68%),linear-gradient(0deg,#270e4533,transparent 29%);z-index:2}
+.jade-bloodlines-page .jade-journey-visual:after{display:none}
+.jade-elemental-ring{position:absolute;left:49%;top:47%;transform:translate(-50%,-50%);width:70%;aspect-ratio:1;border:1px solid #d482f686;border-radius:50%;z-index:3;box-shadow:0 0 24px #c64cfb33,inset 0 0 14px #d172fe30;pointer-events:none}
+.jade-elemental-ring:before{content:"";position:absolute;inset:8%;border-radius:50%;border:1px dashed #b96def35}
+.jade-ring-gem{position:absolute;top:-27px;left:43%;font:52px/1 Georgia,serif;color:#eabbff;text-shadow:0 0 16px #e55cfc}
+.jade-light-ribbons{position:absolute;inset:0;width:100%;height:100%;z-index:4;pointer-events:none}
+.jade-bloodlines-page .jade-journey-copy{background:radial-gradient(ellipse at 100% 66%,#4f1b6759 0%,transparent 52%),linear-gradient(140deg,#201027 0%,#1a0d22 100%);padding:35px 49px 40px 55px;justify-content:flex-start;overflow:hidden}
+.jade-bloodlines-page .jade-journey-copy:before{display:none}
+.jade-bloodlines-page .jade-journey-chapter{width:max-content;max-width:100%;font-size:13px;letter-spacing:0;font-weight:600;border:1px solid #c26adc;border-radius:999px;padding:5px 15px;background:#28112f;color:#f2d3ff;box-shadow:0 0 12px #a23ecd55}
+.jade-bloodlines-page .jade-journey-pulse{height:10px;width:10px;background:white;box-shadow:0 0 10px #f2aaff,0 0 0 3px #b85adf32}
+.jade-bloodlines-page .jade-journey-copy h3{font-size:clamp(33px,2.8vw,45px);line-height:1.12;letter-spacing:-.042em;margin:15px 0 18px;max-width:700px;font-weight:740}
+.jade-bloodlines-page .jade-journey-copy h3 em{display:block;font-size:clamp(34px,2.85vw,45px);font-family:Georgia,serif;letter-spacing:-.025em;font-style:italic;font-weight:400;color:#dda1ed;margin-top:3px}
+.jade-bloodlines-page .jade-journey-copy p{max-width:none;color:#e6dbe7;font-size:17px;line-height:1.5;margin:0 0 13px}
+.jade-bloodlines-page .jade-journey-tags{gap:17px;margin:6px 0 34px}
+.jade-bloodlines-page .jade-journey-tags span{padding:7px 15px;border-radius:999px;border:1px solid #b969dc;color:#eed5f5;background:linear-gradient(90deg,#4a245c90,#281735a0);font-size:13px;font-weight:400;white-space:nowrap}
+.jade-bloodlines-page .jade-journey-actions{gap:17px}
+.jade-bloodlines-page .jade-journey-actions .btn{font-size:17px;padding:12px 22px;border-radius:10px}
+.jade-bloodlines-page .jade-journey-actions .btn-primary{background:linear-gradient(110deg,#a247db,#8633c4)}
+.jade-bloodlines-page .jade-journey-footnote{color:#d0b6dc;font-size:15px;margin:22px auto 0;gap:27px}
+.jade-bloodlines-page .jade-journey-footnote .footnote-line{background:#8953a2;width:110px;height:1px;opacity:.7;flex:none}
+@media(max-width:1150px){.jade-journey-section>.container{width:min(100% - 36px,1000px)}.jade-bloodlines-page .jade-journey-feature{height:auto;min-height:510px}.jade-bloodlines-page .jade-journey-visual{min-height:510px}.jade-bloodlines-page .jade-journey-copy{padding:30px}.jade-bloodlines-page .jade-journey-copy h3,.jade-bloodlines-page .jade-journey-copy h3 em{font-size:clamp(30px,3vw,42px)}.jade-bloodlines-page .jade-journey-copy p{font-size:15px}.jade-bloodlines-page .jade-journey-tags{gap:8px;margin-bottom:22px}.jade-bloodlines-page .jade-journey-tags span{font-size:11px}}
+@media(max-width:720px){.jade-bloodlines-page .jade-journey-section{padding-top:29px}.jade-journey-section>.container{width:calc(100% - 24px)}.jade-journey-intro h2{font-size:39px}.jade-journey-subtitle{font-size:21px;gap:9px}.jade-journey-subtitle span{width:35px}.jade-bloodlines-page .jade-journey-feature{display:flex;flex-direction:column;height:auto;border-radius:17px}.jade-bloodlines-page .jade-journey-visual{height:440px;min-height:440px;flex:none}.jade-bloodlines-page .jade-journey-copy{padding:30px 22px 32px}.jade-bloodlines-page .jade-journey-copy h3,.jade-bloodlines-page .jade-journey-copy h3 em{font-size:31px}.jade-bloodlines-page .jade-journey-copy p{font-size:15px}.jade-bloodlines-page .jade-journey-tags span{font-size:11px}.jade-bloodlines-page .jade-journey-actions .btn{font-size:13px;padding:12px}.jade-bloodlines-page .jade-journey-footnote{font-size:12px;padding:0 10px}.jade-bloodlines-page .jade-journey-footnote .footnote-line{display:none}}
+@media(max-width:375px){.jade-bloodlines-page .jade-journey-visual{min-height:365px;height:365px}.jade-bloodlines-page .jade-journey-copy h3,.jade-bloodlines-page .jade-journey-copy h3 em{font-size:28px}}
 
-/* Ajustes fiéis à composição da arte aprovada para A jornada de Jade */
-.jade-journey-section{padding:24px 0 55px;position:relative;background:radial-gradient(ellipse 60% 38% at 52% 10%,#3c194a80,transparent 90%),radial-gradient(ellipse 35% 48% at 4% 65%,#45145445,transparent 90%),radial-gradient(ellipse 40% 50% at 96% 75%,#39104855,transparent 90%)}
-.jade-journey-section .container{width:min(1470px,calc(100% - 60px))}
-.jade-journey-intro{max-width:none;margin:0 auto 26px}
-.jade-journey-intro h2{font-size:clamp(38px,4.8vw,61px);margin:10px 0 0;line-height:1.04}
-.jade-journey-intro .jade-journey-subtitle{font-family:Georgia,serif;font-size:clamp(20px,2.6vw,33px);font-style:italic;color:#d491ef;line-height:1.22;margin:8px auto 0}
-.jade-journey-subtitle span{font-family:Arial,sans-serif;color:#dc9afa;font-size:12px;vertical-align:middle;margin:0 18px}
-.jade-journey-feature{grid-template-columns:1fr 1.04fr;min-height:565px;border-color:#ae75d8;box-shadow:0 18px 65px #05010877,0 0 0 1px #bf67fc22,0 0 35px #982ccb30}
-.jade-journey-visual{min-height:565px;background:#15243a}
-.jade-journey-visual img{position:absolute;z-index:1;inset:0;left:0;bottom:auto;transform:none;height:100%;width:100%;max-width:none;object-fit:cover;object-position:center center;filter:none}
-.jade-journey-visual:before{z-index:2;background:linear-gradient(90deg,#480f5b18,transparent 60%),linear-gradient(0deg,#150a2518,transparent 45%)}
-.jade-journey-orbit{z-index:3;top:48%;width:min(86%,490px);border-color:#e6a2ff99;box-shadow:0 0 34px #d050ff80,inset 0 0 22px #b947f030}
-.jade-journey-orbit.inner{z-index:3;top:47%;width:min(78%,410px)}
-.jade-journey-visual-tag,.jade-journey-symbol{z-index:5}
-.jade-journey-copy{padding:44px clamp(24px,4vw,64px);background:radial-gradient(ellipse at 100% 96%,#7b2c9e35,transparent 55%)}
-.jade-journey-copy h3{font-size:clamp(33px,3.15vw,47px);margin:16px 0 21px;max-width:580px}
-.jade-journey-copy p{font-size:15px;line-height:1.62;color:#e0d2e9}
-.jade-journey-tags span{border-color:#b774df;background:#4a1c6029;color:#e3c4f1}
-.jade-journey-chapter{display:inline-flex;align-self:flex-start;border:1px solid #c270eeaa;border-radius:999px;padding:7px 14px;color:#efc0fc;background:#4a17615e;box-shadow:0 0 15px #b033df44}
-.jade-journey-footnote{margin-top:21px;color:#caa8df}
-@media(max-width:900px){.jade-journey-feature{grid-template-columns:1fr 1.05fr}.jade-journey-visual{min-height:525px}.jade-journey-copy{padding:28px}.jade-journey-copy h3{font-size:34px}}
-@media(max-width:720px){.jade-journey-section{padding:24px 0 45px}.jade-journey-section .container{width:calc(100% - 32px)}.jade-journey-feature{grid-template-columns:1fr}.jade-journey-visual{min-height:420px}.jade-journey-copy{padding:28px 22px}.jade-journey-intro .jade-journey-subtitle{font-size:22px}.jade-journey-subtitle span{margin:0 8px}}
-@media(max-width:450px){.jade-journey-visual{min-height:340px}}
+@media(max-width:720px){.jade-bloodlines-page .jade-journey-visual img{transform:scale(1.12);transform-origin:50% 45%}}
+
+
+/* Curiosidades sobre Jade - continuação do visual aprovado */
+.jade-curiosities-section{position:relative;isolation:isolate;padding:52px 0 94px;background:radial-gradient(ellipse 640px 350px at 92% 38%,#4a1b6255,transparent 75%),radial-gradient(ellipse 600px 380px at 0% 85%,#3b154b77,transparent 70%),linear-gradient(180deg,#160a22,#10091a);overflow:hidden}
+.jade-curiosities-section:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.28;background-image:radial-gradient(#c689f6 0.6px,transparent 1px);background-size:31px 31px;mask-image:linear-gradient(to bottom,transparent,black 30%,transparent)}
+.jade-curiosities-wrap{position:relative;z-index:1;max-width:1440px}
+.jade-curiosities-heading{text-align:center;max-width:820px;margin:0 auto 32px}
+.jade-curiosities-heading .eyebrow{color:#cd9be7;letter-spacing:2px;font-size:12px}
+.jade-curiosities-heading h2{font-size:clamp(35px,3.6vw,54px);line-height:1.12;letter-spacing:-.052em;margin:8px 0 12px;font-weight:760}
+.jade-curiosities-heading h2 em{color:#e0a7f0;font-family:Georgia,serif;font-style:italic;font-weight:400}
+.jade-curiosities-heading p{max-width:640px;margin:0 auto;color:#c8b7d1;font-size:15px;line-height:1.7}
+.jade-curiosities-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.jade-curiosity-card{min-width:0;border-radius:18px;border:1px solid #6d3a81;background:linear-gradient(130deg,#27132f,#1a0e26 82%);box-shadow:0 10px 36px #09031077;overflow:hidden;transition:border-color .2s,box-shadow .2s}
+.jade-curiosity-card[open]{border-color:#c17dea;box-shadow:0 0 0 1px #a44ada45,0 12px 38px #8138c21e}
+.jade-curiosity-card summary{list-style:none;display:grid;grid-template-columns:47px 1fr auto;grid-template-rows:21px auto;column-gap:16px;align-items:center;padding:23px 25px 22px;cursor:pointer;min-height:111px}
+.jade-curiosity-card summary::-webkit-details-marker{display:none}
+.jade-curiosity-symbol{grid-row:1/3;grid-column:1;display:grid;place-items:center;width:47px;height:47px;border-radius:13px;background:linear-gradient(140deg,#522160,#2c153c);border:1px solid #8b42a3;color:#f0c5ff;font:30px/1 Georgia,serif;text-shadow:0 0 15px #d76dff99}
+.jade-curiosity-meta{grid-row:1;grid-column:2;align-self:end;font-size:10px;font-weight:760;letter-spacing:1.4px;color:#c38cd9}
+.jade-curiosity-card strong{grid-row:2;grid-column:2;align-self:start;font-weight:720;font-size:21px;letter-spacing:-.023em;color:#f8efff}
+.jade-curiosity-toggle{grid-column:3;grid-row:1/3;justify-self:end;display:grid;place-items:center;width:31px;height:31px;border-radius:50%;border:1px solid #765189;background:#21112d;color:#e2b9fa;font-size:22px;line-height:1;transition:transform .2s}
+.jade-curiosity-card[open] .jade-curiosity-toggle{transform:rotate(45deg);border-color:#ad6bc8}
+.jade-curiosity-content{padding:0 27px 24px 88px;color:#d4c4da;font-size:14px;line-height:1.75}
+.jade-curiosities-bottom{margin:30px auto 0;display:flex;justify-content:center;align-items:center;gap:22px;flex-wrap:wrap;color:#ad8dbf;font-size:13px}
+.jade-curiosities-bottom a{font-weight:780;color:#e2b5f6;border-bottom:1px solid #a063c7;padding-bottom:2px}
+.jade-curiosities-bottom a:hover{color:#fff}
+@media(max-width:720px){.jade-curiosities-section{padding:36px 0 78px}.jade-curiosities-wrap{width:calc(100% - 24px)}.jade-curiosities-heading h2{font-size:36px}.jade-curiosities-heading p{font-size:13px}.jade-curiosities-grid{grid-template-columns:1fr;gap:12px}.jade-curiosity-card summary{padding:18px 17px;grid-template-columns:44px 1fr auto;gap:12px;min-height:94px}.jade-curiosity-symbol{width:43px;height:43px}.jade-curiosity-card strong{font-size:17px}.jade-curiosity-content{padding:0 19px 20px 73px;font-size:13px}.jade-curiosities-bottom{margin-top:25px;gap:9px;flex-direction:column}}
+@media(prefers-reduced-motion:reduce){.jade-curiosity-card,.jade-curiosity-toggle{transition:none}}
