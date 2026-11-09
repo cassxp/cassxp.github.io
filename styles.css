@@ -91,3 +91,28 @@
 @media(max-width:900px){.jade-journey-feature{grid-template-columns:minmax(260px,.85fr) minmax(350px,1.15fr)}.jade-journey-copy{padding:35px 30px}.jade-journey-visual{min-height:520px}}
 @media(max-width:720px){.jade-journey-section{padding-top:60px;padding-bottom:62px}.jade-journey-intro{margin-bottom:22px}.jade-journey-feature{grid-template-columns:1fr}.jade-journey-visual{min-height:415px}.jade-journey-visual img{height:100%;object-position:center 44%}.jade-journey-copy{padding:30px 24px 35px}.jade-journey-copy h3{font-size:35px}.jade-journey-footnote{padding:0 15px}.jade-journey-symbol{top:10%;left:12%}}
 @media(max-width:400px){.jade-journey-visual{min-height:345px}.jade-journey-copy h3{font-size:30px}.jade-journey-tags span{font-size:10px}}
+
+
+/* Ajustes fiéis à composição da arte aprovada para A jornada de Jade */
+.jade-journey-section{padding:24px 0 55px;position:relative;background:radial-gradient(ellipse 60% 38% at 52% 10%,#3c194a80,transparent 90%),radial-gradient(ellipse 35% 48% at 4% 65%,#45145445,transparent 90%),radial-gradient(ellipse 40% 50% at 96% 75%,#39104855,transparent 90%)}
+.jade-journey-section .container{width:min(1470px,calc(100% - 60px))}
+.jade-journey-intro{max-width:none;margin:0 auto 26px}
+.jade-journey-intro h2{font-size:clamp(38px,4.8vw,61px);margin:10px 0 0;line-height:1.04}
+.jade-journey-intro .jade-journey-subtitle{font-family:Georgia,serif;font-size:clamp(20px,2.6vw,33px);font-style:italic;color:#d491ef;line-height:1.22;margin:8px auto 0}
+.jade-journey-subtitle span{font-family:Arial,sans-serif;color:#dc9afa;font-size:12px;vertical-align:middle;margin:0 18px}
+.jade-journey-feature{grid-template-columns:1fr 1.04fr;min-height:565px;border-color:#ae75d8;box-shadow:0 18px 65px #05010877,0 0 0 1px #bf67fc22,0 0 35px #982ccb30}
+.jade-journey-visual{min-height:565px;background:#15243a}
+.jade-journey-visual img{position:absolute;z-index:1;inset:0;left:0;bottom:auto;transform:none;height:100%;width:100%;max-width:none;object-fit:cover;object-position:center center;filter:none}
+.jade-journey-visual:before{z-index:2;background:linear-gradient(90deg,#480f5b18,transparent 60%),linear-gradient(0deg,#150a2518,transparent 45%)}
+.jade-journey-orbit{z-index:3;top:48%;width:min(86%,490px);border-color:#e6a2ff99;box-shadow:0 0 34px #d050ff80,inset 0 0 22px #b947f030}
+.jade-journey-orbit.inner{z-index:3;top:47%;width:min(78%,410px)}
+.jade-journey-visual-tag,.jade-journey-symbol{z-index:5}
+.jade-journey-copy{padding:44px clamp(24px,4vw,64px);background:radial-gradient(ellipse at 100% 96%,#7b2c9e35,transparent 55%)}
+.jade-journey-copy h3{font-size:clamp(33px,3.15vw,47px);margin:16px 0 21px;max-width:580px}
+.jade-journey-copy p{font-size:15px;line-height:1.62;color:#e0d2e9}
+.jade-journey-tags span{border-color:#b774df;background:#4a1c6029;color:#e3c4f1}
+.jade-journey-chapter{display:inline-flex;align-self:flex-start;border:1px solid #c270eeaa;border-radius:999px;padding:7px 14px;color:#efc0fc;background:#4a17615e;box-shadow:0 0 15px #b033df44}
+.jade-journey-footnote{margin-top:21px;color:#caa8df}
+@media(max-width:900px){.jade-journey-feature{grid-template-columns:1fr 1.05fr}.jade-journey-visual{min-height:525px}.jade-journey-copy{padding:28px}.jade-journey-copy h3{font-size:34px}}
+@media(max-width:720px){.jade-journey-section{padding:24px 0 45px}.jade-journey-section .container{width:calc(100% - 32px)}.jade-journey-feature{grid-template-columns:1fr}.jade-journey-visual{min-height:420px}.jade-journey-copy{padding:28px 22px}.jade-journey-intro .jade-journey-subtitle{font-size:22px}.jade-journey-subtitle span{margin:0 8px}}
+@media(max-width:450px){.jade-journey-visual{min-height:340px}}
