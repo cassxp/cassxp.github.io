@@ -265,7 +265,10 @@
   document.body.appendChild(pageSweep);
   const fxDestination = pageSweep.querySelector('.cassxp-fx-destination');
   const magicCanvas = pageSweep.querySelector('.cassxp-arcane-canvas');
-  const magicCtx = magicCanvas.getContext('2d', {alpha:true});
+  const magicCtx = (() => {
+    try { return magicCanvas.getContext('2d', {alpha:true}); }
+    catch (_) { return null; }
+  })();
   let magicFrame = 0;
   let magicStarted = 0;
   let magicW = 0, magicH = 0, magicScale = 1;
@@ -296,8 +299,9 @@
     magicCanvas.height = Math.round(magicH * magicScale);
     magicCtx.setTransform(magicScale,0,0,magicScale,0,0);
     magicStarted = performance.now();
-    // Primeiro quadro é pintado antes de qualquer espera/solicitação de frame.
-    drawArcane(magicStarted + 16);
+    // Primeiro quadro já fica pronto; o SVG continua girando se o Canvas falhar.
+    try { drawArcane(magicStarted + 16); }
+    catch (_) { magicFrame = 0; }
   }
   function drawArcane(now) {
     if (!pageSweep.classList.contains('is-covering')) {
