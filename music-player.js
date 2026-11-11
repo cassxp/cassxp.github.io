@@ -271,6 +271,8 @@
   })();
   let magicFrame = 0;
   let magicStarted = 0;
+  let magicLastPaint = 0;
+  let magicSlowFrames = 0;
   let magicW = 0, magicH = 0, magicScale = 1;
   const pageNames = {
     'index.html':'INÍCIO', 'lives.html':'LIVES', 'clips.html':'CLIPES', 'vods.html':'VODS',
@@ -290,24 +292,51 @@
   }
   function startArcane() {
     stopArcane();
+    // O SVG já está visível e animando. Deixa duas oportunidades de pintura
+    // antes de preparar o Canvas, evitando o fundo roxo vazio no primeiro frame.
     if (!magicCtx) return;
-    const bounds = pageSweep.getBoundingClientRect();
-    magicW = Math.max(1, Math.round(bounds.width || innerWidth));
-    magicH = Math.max(1, Math.round(bounds.height || innerHeight));
-    magicScale = 1; // Evita custos de 4x pixels em computadores sem aceleração gráfica.
-    magicCanvas.width = Math.round(magicW * magicScale);
-    magicCanvas.height = Math.round(magicH * magicScale);
-    magicCtx.setTransform(magicScale,0,0,magicScale,0,0);
-    magicStarted = performance.now();
-    // Primeiro quadro já fica pronto; o SVG continua girando se o Canvas falhar.
-    try { drawArcane(magicStarted + 16); }
-    catch (_) { magicFrame = 0; }
+    magicFrame = requestAnimationFrame(() => {
+      magicFrame = requestAnimationFrame(() => {
+        if (!pageSweep.classList.contains('is-covering')) return;
+        try {
+          const bounds = pageSweep.getBoundingClientRect();
+          magicW = Math.max(1, Math.round(bounds.width || window.innerWidth));
+          magicH = Math.max(1, Math.round(bounds.height || window.innerHeight));
+          magicScale = 1;
+          magicCanvas.width = magicW;
+          magicCanvas.height = magicH;
+          magicCtx.setTransform(1,0,0,1,0,0);
+          magicStarted = performance.now();
+          magicLastPaint = 0;
+          magicSlowFrames = 0;
+          drawArcane(magicStarted);
+        } catch (_) {
+          stopArcane();
+          pageSweep.classList.remove('has-canvas');
+        }
+      });
+    });
   }
   function drawArcane(now) {
     if (!pageSweep.classList.contains('is-covering')) {
       magicFrame = 0;
       return;
     }
+    // Limita o Canvas a cerca de 30 FPS para reduzir travamentos.
+    // Os círculos SVG giram a 60 FPS pelo compositor CSS independentemente.
+    if (magicLastPaint && now - magicLastPaint < 32) {
+      magicFrame = requestAnimationFrame(drawArcane);
+      return;
+    }
+    if (magicLastPaint && now - magicLastPaint > 115) magicSlowFrames++;
+    else magicSlowFrames = Math.max(0, magicSlowFrames - 1);
+    if (magicSlowFrames >= 5) {
+      // Em dispositivo lento: mantém só o círculo SVG, sem tela vazia.
+      pageSweep.classList.remove('has-canvas');
+      magicFrame = 0;
+      return;
+    }
+    magicLastPaint = now;
     const ctx = magicCtx;
     const gentle = reduceMagic;
     const t = gentle ? 1.4 : Math.max(.13,(now - magicStarted) / 1000);
@@ -320,7 +349,7 @@
     ctx.globalCompositeOperation = 'screen';
 
     // Nuvens mágicas, em movimento lento e contínuo.
-    for (let k=0; k<5; k++) {
+    for (let k=0; k<3; k++) {
       const x = cx + Math.sin(t*.57 + k*2.17)*R*.75;
       const y = cy + Math.cos(t*.48 + k*1.39)*R*.55;
       const grad = ctx.createRadialGradient(x,y,4,x,y,R*(.75+k*.08));
@@ -352,7 +381,7 @@
       const a=i*Math.PI/36;
       const r1=R*(i%6===0?.911:.937);
       const r2=R*(i%6===0?.967:.954);
-      line(i%6===0?1.6:.9,'#ff67e1',7);
+      line(i%6===0?1.6:.9,'#ff67e1',0);
       ctx.beginPath();ctx.moveTo(Math.cos(a)*r1,Math.sin(a)*r1);
       ctx.lineTo(Math.cos(a)*r2,Math.sin(a)*r2);ctx.stroke();
     }
@@ -360,7 +389,7 @@
       const a=i*Math.PI/6-Math.PI/2;
       ctx.save();ctx.translate(Math.cos(a)*R*.886,Math.sin(a)*R*.886);
       ctx.rotate(a+Math.PI/2);
-      line(1.3,'#ff74e7',12);circle(R*.068);
+      line(1.3,'#ff74e7',0);circle(R*.068);
       const z=R*.036;
       ctx.beginPath();
       if(i%3===0){ctx.moveTo(-z,-z);ctx.lineTo(0,z);ctx.lineTo(z,-z);ctx.moveTo(-z,0);ctx.lineTo(z,0);}
@@ -417,8 +446,8 @@
     ctx.restore();
 
     // Poeira mágica não repete uma posição estática: flutua e cintila.
-    ctx.shadowBlur=8;ctx.shadowColor='#fc44e6';
-    for(let i=0;i<125;i++){
+    ctx.shadowBlur=0;ctx.shadowColor='transparent';
+    for(let i=0;i<62;i++){
       const seed=i*2.3999632297;
       const distance=.19+(i%29)/29*1.28;
       const speed=(i%2===0?1:-1)*(.16+i%7*.075);
@@ -448,13 +477,22 @@
     }
     ctx.restore();
     pageSweep.classList.add("has-canvas");
-    if (!gentle) magicFrame=requestAnimationFrame(drawArcane);
-    else magicFrame=0;
+    if (!gentle) {
+      magicFrame=requestAnimationFrame((when) => {
+        try { drawArcane(when); }
+        catch (_) {
+          stopArcane();
+          pageSweep.classList.remove('has-canvas');
+        }
+      });
+    } else magicFrame=0;
   }
 
   function resetPageFx() {
     stopArcane();
     pageSweep.classList.remove('is-ready','is-covering','is-leaving','has-canvas');
+    magicLastPaint = 0;
+    magicSlowFrames = 0;
   }
   function updateNav(url) {
     const activeUrl = url.pathname.endsWith('/news.html') ? 'clips.html'
