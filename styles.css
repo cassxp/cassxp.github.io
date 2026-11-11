@@ -314,10 +314,62 @@
   .cassxp-arcane-caption>span{font-size:26px}
   .cassxp-arcane-caption small{font-size:8px}
 }
-@media(prefers-reduced-motion:reduce){
-  .cassxp-page-sweep.is-ready.is-covering{transition:opacity 180ms ease}
-  .cassxp-page-sweep.is-ready.is-covering.is-leaving{transition:opacity 260ms ease}
-  .cassxp-arcane-caption{opacity:1;animation:none!important}
+/* Visitante pode escolher explicitamente ?magia=reduzida. */
+.cassxp-page-sweep.is-reduced.is-ready.is-covering{transition:opacity 180ms ease}
+.cassxp-page-sweep.is-reduced.is-ready.is-covering.is-leaving{transition:opacity 260ms ease}
+.cassxp-page-sweep.is-reduced .cassxp-arcane-caption{opacity:1;animation:none!important}
+.cassxp-page-sweep.is-reduced .cassxp-arcane-backup *{animation:none!important}
+
+/* Camada SVG independente: aparece imediatamente e gira mesmo sem frames Canvas. */
+.cassxp-arcane-backup{
+  position:absolute;z-index:0;left:50%;top:43%;
+  width:min(82vw,70vh,520px);aspect-ratio:1;
+  transform:translate(-50%,-50%) scale(.85);
+  opacity:.88;
+  filter:drop-shadow(0 0 5px rgba(247,66,225,.8))
+    drop-shadow(0 0 21px rgba(212,25,204,.45));
+  pointer-events:none;
+  will-change:transform,opacity;
+}
+.cassxp-arcane-backup svg{display:block;width:100%;height:100%;overflow:visible}
+.cassxp-arcane-backup svg g{
+  fill:none;stroke:#fa65de;stroke-width:1.55;stroke-linejoin:round;
+  stroke-linecap:round;transform-origin:250px 250px;
+  will-change:transform;
+}
+.cassxp-arcane-backup .arcane-backup-mid{stroke:#f135d0;stroke-width:1.9}
+.cassxp-arcane-backup .arcane-backup-inside{stroke:#ffc2ef;stroke-width:1.4}
+.cassxp-page-sweep.is-covering .cassxp-arcane-backup{
+  animation:cassxp-fallback-appear 450ms cubic-bezier(.2,.8,.2,1) both,
+    cassxp-fallback-breathe 1200ms ease-in-out 450ms infinite alternate;
+}
+.cassxp-page-sweep.is-covering .arcane-backup-outside{
+  animation:cassxp-fallback-clockwise 2500ms linear infinite;
+}
+.cassxp-page-sweep.is-covering .arcane-backup-mid{
+  animation:cassxp-fallback-counter 1700ms linear infinite;
+}
+.cassxp-page-sweep.is-covering .arcane-backup-inside{
+  animation:cassxp-fallback-clockwise 1150ms linear infinite reverse;
+}
+.cassxp-page-sweep.has-canvas .cassxp-arcane-backup{opacity:.32}
+.cassxp-arcane-canvas{z-index:1}
+@keyframes cassxp-fallback-clockwise{
+  from{transform:rotate(0deg)}to{transform:rotate(360deg)}
+}
+@keyframes cassxp-fallback-counter{
+  from{transform:rotate(0deg)}to{transform:rotate(-360deg)}
+}
+@keyframes cassxp-fallback-appear{
+  from{transform:translate(-50%,-50%) scale(.48);opacity:.27}
+  to{transform:translate(-50%,-50%) scale(1);opacity:.87}
+}
+@keyframes cassxp-fallback-breathe{
+  from{filter:drop-shadow(0 0 5px rgba(247,66,225,.8))}
+  to{filter:drop-shadow(0 0 20px rgba(252,75,239,.98))}
+}
+@media(max-width:600px){
+  .cassxp-arcane-backup{width:min(92vw,64vh)}
 }
 
 /* Lives CassXP: iframe da Twitch ocupa todo o player, em 16:9. */
