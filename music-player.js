@@ -465,7 +465,7 @@
 
     // Onda luminosa no fim: a página de destino nasce da magia.
     if(pageSweep.classList.contains('is-leaving')) {
-      const q=Math.min(1,Math.max(0,(t-3.08)/.7));
+      const q=Math.min(1,Math.max(0,(t-2.25)/.7));
       const rad=R*(.34+q*2.55);
       line(2+q*12,'rgba(255,151,248,'+(1-q)+')',35);
       circle(rad);
@@ -554,7 +554,7 @@
 
       const [html] = await Promise.all([
         responsePromise,
-        sleep(gentleMotion ? 650 : 3050)
+        sleep(gentleMotion ? 650 : 2000)
       ]);
       if (current !== serial) return;
 
@@ -588,7 +588,7 @@
       }
       if (doMotion) {
         // Pausa curta para a marca ficar visível e legível.
-        await sleep(gentleMotion ? 240 : 280);
+        await sleep(gentleMotion ? 240 : 250);
         if (current !== serial) return;
         pageSweep.classList.add('is-leaving');
         if (!gentleMotion && incoming && typeof incoming.animate === 'function') {
@@ -597,7 +597,7 @@
             {opacity:1,transform:'translateY(0)',filter:'blur(0)'}
           ], {duration:440,easing:'cubic-bezier(.18,.7,.15,1)'});
         }
-        await sleep(gentleMotion ? 450 : 760);
+        await sleep(gentleMotion ? 450 : 750);
         if (current === serial) resetPageFx();
       }
       if (location.hostname === 'cassxp.github.io' && typeof window.gtag === 'function') {
