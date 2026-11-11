@@ -254,35 +254,95 @@
 .music-player.needs-interaction{border-color:#cb9deb;box-shadow:0 10px 34px rgba(0,0,0,.54),0 0 22px rgba(175,88,225,.37)}
 @media(max-width:600px){.music-player.needs-interaction .music-volume-label{display:none}.music-unlock{padding:7px 8px;font-size:10px}}
 
-/* CassXP — transição cinematográfica entre páginas */
+/* CassXP — transição gamer cinematográfica entre as páginas.
+   A marca aparece somente durante a navegação interna, nunca na carga inicial. */
 .cassxp-page-sweep{
   position:fixed;
   inset:0;
-  z-index:58;
+  z-index:59;
   pointer-events:none;
   opacity:0;
   visibility:hidden;
-  background:linear-gradient(103deg,
-    transparent 0%,
-    transparent 30%,
-    rgba(107,36,169,.02) 40%,
-    rgba(143,59,219,.17) 48%,
-    rgba(220,157,255,.24) 50%,
-    rgba(147,63,218,.12) 54%,
-    transparent 66%);
-  transform:translateX(-105%);
+  overflow:hidden;
+  isolation:isolate;
+  background:
+    radial-gradient(ellipse 70% 72% at 50% 45%,rgba(108,38,169,.62),transparent 74%),
+    linear-gradient(112deg,#0e0718 0%,#251037 44%,#150b27 70%,#070611 100%);
+  transform:translateX(-104%);
   will-change:transform,opacity;
 }
 .cassxp-page-sweep.is-active{
   visibility:visible;
-  animation:cassxp-page-light-sweep 620ms cubic-bezier(.18,.67,.2,1) both;
+  animation:cassxp-gamer-screen-wipe 600ms cubic-bezier(.28,.62,.22,1) both;
 }
-@keyframes cassxp-page-light-sweep{
-  0%{opacity:0;transform:translateX(-105%)}
-  17%{opacity:1}
-  70%{opacity:.82}
-  100%{opacity:0;transform:translateX(105%)}
+.cassxp-page-sweep::before{
+  content:"";
+  position:absolute;
+  inset:-24%;
+  z-index:0;
+  background:linear-gradient(107deg,transparent 45%,rgba(238,201,255,.12) 48%,rgba(242,221,255,.46) 50%,rgba(161,81,235,.21) 52%,transparent 56%);
+  transform:translateX(-12%) rotate(-5deg);
+}
+.cassxp-page-sweep::after{
+  content:"";
+  position:absolute;
+  z-index:3;
+  top:0;bottom:0;right:0;width:clamp(6px,1.15vw,19px);
+  background:linear-gradient(180deg,#e0baff,#ac64f3 44%,#f4e3ff 55%,#7330c1);
+  box-shadow:0 0 32px rgba(213,145,255,.87),-10px 0 68px rgba(159,54,235,.58);
+  transform:skewX(-11deg) translateX(8px);
+}
+.cassxp-fx-grid{
+  position:absolute;inset:0;z-index:0;opacity:.35;
+  background-image:
+    linear-gradient(rgba(163,93,218,.1) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(163,93,218,.1) 1px,transparent 1px);
+  background-size:46px 46px;
+  mask-image:radial-gradient(ellipse at center,#000,transparent 75%);
+}
+.cassxp-fx-beam{
+  position:absolute;inset:0;z-index:1;
+  background:radial-gradient(ellipse 34% 55% at 54% 45%,rgba(209,142,253,.16),transparent 82%);
+}
+.cassxp-fx-ident{
+  position:absolute;z-index:2;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:6px;text-align:center;color:#fff;
+  filter:drop-shadow(0 8px 28px rgba(7,3,19,.8));
+}
+.cassxp-fx-ident img{
+  width:58px;height:58px;border-radius:50%;
+  border:1px solid rgba(221,167,255,.68);
+  box-shadow:0 0 26px rgba(174,69,244,.54);object-fit:cover;
+}
+.cassxp-fx-brand{
+  font-size:clamp(32px,4.5vw,56px);
+  font-weight:900;line-height:1.06;
+  letter-spacing:-.07em;
+  text-shadow:0 0 30px rgba(177,92,249,.65);
+}
+.cassxp-fx-brand span{color:#d79afb}
+.cassxp-fx-line{width:105px;height:2px;margin:5px 0 10px;background:linear-gradient(90deg,transparent,#ebcdff,transparent)}
+.cassxp-fx-ident small{font-size:10px;letter-spacing:.33em;font-weight:850;color:#cb9be9}
+.cassxp-fx-destination{font-size:clamp(14px,1.6vw,20px);letter-spacing:.19em;font-weight:800;color:#fff}
+@keyframes cassxp-gamer-screen-wipe{
+  0%{opacity:0;transform:translateX(-104%) skewX(-4deg)}
+  13%{opacity:.95;transform:translateX(-34%) skewX(-3deg)}
+  30%{opacity:.97;transform:translateX(0) skewX(0)}
+  48%{opacity:.96;transform:translateX(0) skewX(0)}
+  70%{opacity:.78;transform:translateX(29%) skewX(2deg)}
+  100%{opacity:0;transform:translateX(106%) skewX(4deg)}
+}
+@media(max-width:600px){
+  .cassxp-fx-ident img{width:48px;height:48px}
+  .cassxp-fx-ident{gap:5px}
+  .cassxp-fx-brand{font-size:37px}
+  .cassxp-fx-line{margin:4px 0 8px}
+  .cassxp-fx-ident small{font-size:9px}
+  .cassxp-fx-destination{font-size:13px}
 }
 @media(prefers-reduced-motion:reduce){
-  .cassxp-page-sweep,.cassxp-page-sweep.is-active{animation:none!important;opacity:0!important;visibility:hidden!important}
+  .cassxp-page-sweep,.cassxp-page-sweep.is-active{
+    animation:none!important;opacity:0!important;visibility:hidden!important
+  }
 }
