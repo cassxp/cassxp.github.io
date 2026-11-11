@@ -228,98 +228,22 @@
   const pageSweep = document.createElement('div');
   pageSweep.className = 'cassxp-page-sweep';
   pageSweep.setAttribute('aria-hidden', 'true');
-  // Círculo arcano da transição: anéis, selos e runas vetoriais originais.
-  // SVG leve, sem GIF externo; cada camada tem movimento próprio.
-  const arcanePoint = (r, degrees) => {
-    const a = degrees * Math.PI / 180;
-    return [+(250 + Math.cos(a) * r).toFixed(2), +(250 + Math.sin(a) * r).toFixed(2)];
-  };
-  const arcanePolygon = (sides, r, offset = -90) =>
-    Array.from({length:sides}, (_, i) => arcanePoint(r, offset + 360*i/sides).join(',')).join(' ');
-  const arcaneStar = (points, step, r, offset = -90) =>
-    Array.from({length:points}, (_, i) => arcanePoint(r, offset + 360*(i*step%points)/points).join(',')).join(' ');
-  const arcaneTicks = Array.from({length:72}, (_, i) => {
-    const a = i * 5, major = i % 6 === 0;
-    const p1 = arcanePoint(major ? 211 : 217, a);
-    const p2 = arcanePoint(major ? 226 : 223, a);
-    return '<line x1="'+p1[0]+'" y1="'+p1[1]+'" x2="'+p2[0]+'" y2="'+p2[1]+'" />';
-  }).join('');
-  const arcaneRunes = Array.from({length:12}, (_, i) => {
-    const [x, y] = arcanePoint(202, i*30-90);
-    const glyphs = [
-      'M-6 -8 L0 7 L6 -8 M-7 1 L7 1',
-      'M0 -9 L0 9 M-6 -4 L0 -9 L6 -4 M-6 4 L6 4',
-      'M-7 -7 L7 7 M7 -7 L-7 7 M-8 0 L8 0',
-      'M-8 6 L0 -9 L8 6 M-5 -1 L5 -1'
-    ];
-    return '<g transform="translate('+x+' '+y+') rotate('+(i*30)+')">'+
-      '<circle r="14.5" /><circle r="11.6" opacity=".5"/>'+
-      '<path d="'+glyphs[i%glyphs.length]+'" /></g>';
-  }).join('');
-  const arcaneDust = Array.from({length:94}, (_, i) => {
-    const angle = (i * 137.508 + 17) * Math.PI / 180;
-    const radius = 24 + (i % 19) * 12;
-    const x = Math.round(Math.cos(angle) * radius);
-    const y = Math.round(Math.sin(angle) * radius);
-    const driftX = Math.round(Math.cos(angle) * (55 + i % 125));
-    const driftY = Math.round(Math.sin(angle) * (55 + i % 125) - 30);
-    return '<i style="--px:'+x+'px;--py:'+y+'px;--mx:'+driftX+'px;--my:'+driftY+
-      'px;--d:'+(i*79%1080)+'ms;--sz:'+(1+(i%4))+'px"></i>';
-  }).join('');
+  // Renderização real a cada quadro: órbitas, runas, traços de luz e faíscas.
+  // Diferentemente da versão anterior, o desenho inteiro evolui pelo tempo.
   pageSweep.innerHTML = `
-    <div class="cassxp-arcane-mist mist-a"></div>
-    <div class="cassxp-arcane-mist mist-b"></div>
-    <div class="cassxp-arcane-halo"></div>
-    <div class="cassxp-arcane-rays"></div>
-    <div class="cassxp-arcane-circle">
-      <svg viewBox="0 0 500 500" class="cassxp-arcane-svg" aria-hidden="true" focusable="false">
-        <g class="arcane-outer">
-          <circle class="arcane-stroke outer-glow" cx="250" cy="250" r="228"/>
-          <circle class="arcane-stroke" cx="250" cy="250" r="220"/>
-          <circle class="arcane-stroke" cx="250" cy="250" r="185"/>
-          <circle class="arcane-dotted" cx="250" cy="250" r="232"/>
-          <g class="arcane-ticks">${arcaneTicks}</g>
-          <g class="arcane-runes">${arcaneRunes}</g>
-        </g>
-        <g class="arcane-tracer tracer-one">
-          <circle cx="250" cy="250" r="214" />
-          <circle cx="250" cy="250" r="190" />
-        </g>
-        <g class="arcane-tracer tracer-two">
-          <circle cx="250" cy="250" r="158" />
-          <circle cx="250" cy="250" r="120" />
-        </g>
-        <g class="arcane-mid">
-          <circle class="arcane-stroke" cx="250" cy="250" r="176"/>
-          <circle class="arcane-stroke subtle" cx="250" cy="250" r="167"/>
-          <circle class="arcane-stroke" cx="250" cy="250" r="137"/>
-          <polygon class="arcane-stroke subtle" points="${arcanePolygon(8,168)}"/>
-          <polygon class="arcane-stroke" points="${arcaneStar(8,3,170)}"/>
-          <polygon class="arcane-stroke subtle" points="${arcanePolygon(12,148)}"/>
-        </g>
-        <g class="arcane-inner">
-          <circle class="arcane-stroke" cx="250" cy="250" r="115"/>
-          <circle class="arcane-stroke subtle" cx="250" cy="250" r="102"/>
-          <polygon class="arcane-stroke" points="${arcaneStar(5,2,104)}"/>
-          <polygon class="arcane-stroke subtle" points="${arcanePolygon(6,112)}"/>
-          <circle class="arcane-stroke" cx="250" cy="250" r="69"/>
-          <circle class="arcane-stroke subtle" cx="250" cy="250" r="53"/>
-          <polygon class="arcane-stroke" points="${arcaneStar(8,3,51)}"/>
-          <path class="arcane-symbol" d="M250 206 L250 294 M222 228 L278 272 M278 228 L222 272 M229 250 L271 250 M241 217 L259 283 M259 217 L241 283"/>
-        </g>
-      </svg>
-    </div>
-    <div class="cassxp-arcane-dust">${arcaneDust}</div>
-    <div class="cassxp-arcane-core"></div>
-    <div class="cassxp-arcane-shockwave"></div>
-    <div class="cassxp-arcane-flare"></div>
+    <canvas class="cassxp-arcane-canvas" aria-hidden="true"></canvas>
     <div class="cassxp-arcane-caption">
       <span>CASS<span class="cassxp-arcane-xp">XP</span></span>
-      <small>ABRINDO PORTAL</small>
+      <small>INVOCANDO O PORTAL</small>
       <strong class="cassxp-fx-destination">O UNIVERSO CASSXP</strong>
     </div>`;
   document.body.appendChild(pageSweep);
   const fxDestination = pageSweep.querySelector('.cassxp-fx-destination');
+  const magicCanvas = pageSweep.querySelector('.cassxp-arcane-canvas');
+  const magicCtx = magicCanvas.getContext('2d', {alpha:true});
+  let magicFrame = 0;
+  let magicStarted = 0;
+  let magicW = 0, magicH = 0, magicScale = 1;
   const pageNames = {
     'index.html':'INÍCIO', 'lives.html':'LIVES', 'clips.html':'CLIPES', 'vods.html':'VODS',
     'jadedevonne.html':'JADE DEVONNE', 'conheca-cass.html':'CONHEÇA CASS',
@@ -328,7 +252,171 @@
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const sleep = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));
 
+  function stopArcane() {
+    if (magicFrame) cancelAnimationFrame(magicFrame);
+    magicFrame = 0;
+  }
+  function startArcane() {
+    stopArcane();
+    if (!magicCtx) return;
+    const bounds = pageSweep.getBoundingClientRect();
+    magicW = Math.max(1, Math.round(bounds.width || innerWidth));
+    magicH = Math.max(1, Math.round(bounds.height || innerHeight));
+    magicScale = Math.min(devicePixelRatio || 1, 2);
+    magicCanvas.width = Math.round(magicW * magicScale);
+    magicCanvas.height = Math.round(magicH * magicScale);
+    magicCtx.setTransform(magicScale,0,0,magicScale,0,0);
+    magicStarted = performance.now();
+    magicFrame = requestAnimationFrame(drawArcane);
+  }
+  function drawArcane(now) {
+    if (!pageSweep.classList.contains('is-covering')) {
+      magicFrame = 0;
+      return;
+    }
+    const ctx = magicCtx;
+    const t = (now - magicStarted) / 1000;
+    const R = Math.min(magicW * .39, magicH * .32, 275);
+    const cx = magicW / 2, cy = magicH * .43;
+    const grow = Math.min(1, t / .8);
+    const entrance = 1 - Math.pow(1-grow, 3);
+    ctx.clearRect(0,0,magicW,magicH);
+    ctx.save();
+    ctx.globalCompositeOperation = 'screen';
+
+    // Nuvens mágicas, em movimento lento e contínuo.
+    for (let k=0; k<5; k++) {
+      const x = cx + Math.sin(t*.57 + k*2.17)*R*.75;
+      const y = cy + Math.cos(t*.48 + k*1.39)*R*.55;
+      const grad = ctx.createRadialGradient(x,y,4,x,y,R*(.75+k*.08));
+      grad.addColorStop(0,'rgba(204,32,179,.19)');
+      grad.addColorStop(.48,'rgba(120,20,138,.12)');
+      grad.addColorStop(1,'rgba(60,8,70,0)');
+      ctx.fillStyle = grad;
+      ctx.beginPath();ctx.arc(x,y,R*(.75+k*.08),0,Math.PI*2);ctx.fill();
+    }
+
+    ctx.translate(cx,cy);
+    ctx.scale(entrance,entrance);
+    const line=(width,color,blur=12)=>{
+      ctx.strokeStyle=color;ctx.lineWidth=width;
+      ctx.shadowColor='#ff27d3';ctx.shadowBlur=blur;
+      ctx.lineCap='round';ctx.lineJoin='round';
+    };
+    const circle=(radius)=>{
+      ctx.beginPath();ctx.arc(0,0,radius,0,Math.PI*2);ctx.stroke();
+    };
+    // 3 conjuntos independentes: em cada frame os ângulos são diferentes.
+    ctx.save();
+    ctx.rotate(t*.72);
+    line(1.9,'rgba(255,72,211,.92)',17);
+    circle(R);circle(R*.968);circle(R*.847);
+    ctx.setLineDash([2,8]);line(1.4,'#ffa3ef',10);circle(R*1.029);ctx.setLineDash([]);
+    // Marcações e doze cápsulas de runas.
+    for(let i=0;i<72;i++){
+      const a=i*Math.PI/36;
+      const r1=R*(i%6===0?.911:.937);
+      const r2=R*(i%6===0?.967:.954);
+      line(i%6===0?1.6:.9,'#ff67e1',7);
+      ctx.beginPath();ctx.moveTo(Math.cos(a)*r1,Math.sin(a)*r1);
+      ctx.lineTo(Math.cos(a)*r2,Math.sin(a)*r2);ctx.stroke();
+    }
+    for(let i=0;i<12;i++){
+      const a=i*Math.PI/6-Math.PI/2;
+      ctx.save();ctx.translate(Math.cos(a)*R*.886,Math.sin(a)*R*.886);
+      ctx.rotate(a+Math.PI/2);
+      line(1.3,'#ff74e7',12);circle(R*.068);
+      const z=R*.036;
+      ctx.beginPath();
+      if(i%3===0){ctx.moveTo(-z,-z);ctx.lineTo(0,z);ctx.lineTo(z,-z);ctx.moveTo(-z,0);ctx.lineTo(z,0);}
+      else if(i%3===1){ctx.moveTo(0,-z);ctx.lineTo(0,z);ctx.moveTo(-z,-z*.5);ctx.lineTo(0,-z);ctx.lineTo(z,-z*.5);ctx.moveTo(-z,z*.5);ctx.lineTo(z,z*.5);}
+      else{ctx.moveTo(-z,-z);ctx.lineTo(z,z);ctx.moveTo(z,-z);ctx.lineTo(-z,z);ctx.moveTo(-z,0);ctx.lineTo(z,0);}
+      ctx.stroke();ctx.restore();
+    }
+    ctx.restore();
+    // Contra-rotação do mandala central (visível ao longo da animação).
+    ctx.save();ctx.rotate(-t*1.13);
+    line(1.65,'rgba(255,58,225,.94)',14);
+    circle(R*.77);circle(R*.685);circle(R*.55);
+    const polygon=(n,rad,step=1,turn=-Math.PI/2)=>{
+      ctx.beginPath();
+      for(let i=0;i<n;i++){
+        const a=turn+(i*step%n)*2*Math.PI/n;
+        const x=Math.cos(a)*rad,y=Math.sin(a)*rad;
+        if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+      }
+      ctx.closePath();ctx.stroke();
+    };
+    line(1.3,'#fc59da',11);polygon(8,R*.76,3);polygon(6,R*.685);polygon(12,R*.6,5);
+    ctx.restore();
+    ctx.save();ctx.rotate(t*.61);
+    line(2,'#ff72e8',18);circle(R*.49);circle(R*.33);
+    polygon(5,R*.475,2);polygon(8,R*.32,3);
+    ctx.restore();
+
+    // Trilhas intensas de luz que percorrem as bordas com velocidades próprias.
+    for(let j=0;j<5;j++){
+      const angle=(j*2.19)+(t*(1.6+j*.22))*(j%2?-1:1);
+      const rr=R*[.996,.83,.7,.54,.365][j];
+      ctx.save();ctx.rotate(angle);
+      line(j===0?4:2.7,j%2===0?'#fff0ff':'#ff8bec',26);
+      ctx.beginPath();ctx.arc(0,0,rr,0,.15+j*.03);ctx.stroke();
+      ctx.restore();
+    }
+
+    // Sigilo central brilhante, que pulsa como um núcleo de energia.
+    const pulse=1+.07*Math.sin(t*9);
+    ctx.save();ctx.scale(pulse,pulse);
+    const glow=ctx.createRadialGradient(0,0,1,0,0,R*.29);
+    glow.addColorStop(0,'rgba(255,238,255,.27)');
+    glow.addColorStop(.2,'rgba(255,69,226,.19)');
+    glow.addColorStop(1,'rgba(255,14,187,0)');
+    ctx.fillStyle=glow;ctx.beginPath();ctx.arc(0,0,R*.29,0,Math.PI*2);ctx.fill();
+    line(2.1,'#ffb3f4',22);
+    for(let a=0;a<8;a++){
+      const ang=a*Math.PI/4;
+      ctx.beginPath();ctx.moveTo(Math.cos(ang)*R*.07,Math.sin(ang)*R*.07);
+      ctx.lineTo(Math.cos(ang)*R*.2,Math.sin(ang)*R*.2);ctx.stroke();
+    }
+    circle(R*.11);
+    ctx.restore();
+
+    // Poeira mágica não repete uma posição estática: flutua e cintila.
+    ctx.shadowBlur=8;ctx.shadowColor='#fc44e6';
+    for(let i=0;i<125;i++){
+      const seed=i*2.3999632297;
+      const distance=.19+(i%29)/29*1.28;
+      const speed=(i%2===0?1:-1)*(.16+i%7*.075);
+      const a=seed+t*speed;
+      const r=R*distance*(1+.025*Math.sin(t*4+i));
+      const x=Math.cos(a)*r+Math.sin(t*.7+i)*7;
+      const y=Math.sin(a)*r+Math.cos(t*.43+i)*9;
+      const flicker=(Math.sin(t*(3+i%5)+i*2.1)+1)/2;
+      ctx.globalAlpha=(.14+.77*flicker)*Math.min(1,t*2);
+      ctx.fillStyle=i%7===0?'#fff4ff':'#ff64dc';
+      const size=1+(i%5)*.52;
+      ctx.beginPath();ctx.arc(x,y,size,0,Math.PI*2);ctx.fill();
+    }
+    ctx.globalAlpha=1;
+
+    // Onda luminosa no fim: a página de destino nasce da magia.
+    if(pageSweep.classList.contains('is-leaving')) {
+      const q=Math.min(1,Math.max(0,(t-3.08)/.7));
+      const rad=R*(.34+q*2.55);
+      line(2+q*12,'rgba(255,151,248,'+(1-q)+')',35);
+      circle(rad);
+      const flash=ctx.createRadialGradient(0,0,0,0,0,R*(.28+q*1.9));
+      flash.addColorStop(0,'rgba(255,245,255,'+(.6*(1-q))+')');
+      flash.addColorStop(.4,'rgba(255,84,224,'+(.28*(1-q))+')');
+      flash.addColorStop(1,'rgba(255,42,191,0)');
+      ctx.fillStyle=flash;ctx.beginPath();ctx.arc(0,0,R*(.28+q*1.9),0,Math.PI*2);ctx.fill();
+    }
+    ctx.restore();
+    magicFrame=requestAnimationFrame(drawArcane);
+  }
+
   function resetPageFx() {
+    stopArcane();
     pageSweep.classList.remove('is-ready','is-covering','is-leaving');
   }
   function updateNav(url) {
@@ -377,6 +465,7 @@
       // Força o estado inicial antes da transição CSS, inclusive com cache quente.
       void pageSweep.offsetWidth;
       pageSweep.classList.add('is-covering');
+      if (!gentleMotion) startArcane();
     }
 
     try {
