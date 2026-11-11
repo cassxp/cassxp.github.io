@@ -259,7 +259,7 @@
 .cassxp-page-sweep{
   position:fixed;
   inset:0;
-  z-index:65;
+  z-index:999;
   pointer-events:none;
   opacity:1;
   visibility:hidden;
@@ -343,10 +343,17 @@
   .cassxp-fx-destination{font-size:13px}
 }
 @media(prefers-reduced-motion:reduce){
+  /* Preferência de acessibilidade: logo aparece, mas sem varredura lateral. */
   .cassxp-page-sweep,
   .cassxp-page-sweep.is-ready,
   .cassxp-page-sweep.is-ready.is-covering,
   .cassxp-page-sweep.is-ready.is-covering.is-leaving{
-    transition:none!important;visibility:hidden!important
+    transform:none!important;
+    transition:opacity 170ms ease!important
   }
+  .cassxp-page-sweep{visibility:hidden;opacity:0}
+  .cassxp-page-sweep.is-ready{visibility:visible;opacity:0}
+  .cassxp-page-sweep.is-ready.is-covering{visibility:visible;opacity:1}
+  .cassxp-page-sweep.is-ready.is-covering.is-leaving{visibility:visible;opacity:0}
+  .cassxp-fx-grid,.cassxp-fx-beam{display:none}
 }
