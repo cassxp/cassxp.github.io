@@ -228,32 +228,83 @@
   const pageSweep = document.createElement('div');
   pageSweep.className = 'cassxp-page-sweep';
   pageSweep.setAttribute('aria-hidden', 'true');
-  // Partículas animadas para um portal mágico mais demorado (cerca de 3 segundos).
-  const magicParticles = Array.from({length:64}, (_, i) => {
-    const angle = (i * 137.508 + 13) * Math.PI / 180;
-    const radius = 68 + (i % 10) * 28;
-    const dx = Math.round(Math.cos(angle) * radius);
-    const dy = Math.round(Math.sin(angle) * radius * .65 - (i % 5) * 8);
-    const delay = (i * 47) % 850;
-    const size = 2 + (i % 5);
-    return '<i style="--dx:'+dx+'px;--dy:'+dy+'px;--delay:'+delay+'ms;--size:'+size+'px"></i>';
+  // Círculo arcano da transição: anéis, selos e runas vetoriais originais.
+  // SVG leve, sem GIF externo; cada camada tem movimento próprio.
+  const arcanePoint = (r, degrees) => {
+    const a = degrees * Math.PI / 180;
+    return [+(250 + Math.cos(a) * r).toFixed(2), +(250 + Math.sin(a) * r).toFixed(2)];
+  };
+  const arcanePolygon = (sides, r, offset = -90) =>
+    Array.from({length:sides}, (_, i) => arcanePoint(r, offset + 360*i/sides).join(',')).join(' ');
+  const arcaneStar = (points, step, r, offset = -90) =>
+    Array.from({length:points}, (_, i) => arcanePoint(r, offset + 360*(i*step%points)/points).join(',')).join(' ');
+  const arcaneTicks = Array.from({length:72}, (_, i) => {
+    const a = i * 5, major = i % 6 === 0;
+    const p1 = arcanePoint(major ? 211 : 217, a);
+    const p2 = arcanePoint(major ? 226 : 223, a);
+    return '<line x1="'+p1[0]+'" y1="'+p1[1]+'" x2="'+p2[0]+'" y2="'+p2[1]+'" />';
+  }).join('');
+  const arcaneRunes = Array.from({length:12}, (_, i) => {
+    const [x, y] = arcanePoint(202, i*30-90);
+    const glyphs = [
+      'M-6 -8 L0 7 L6 -8 M-7 1 L7 1',
+      'M0 -9 L0 9 M-6 -4 L0 -9 L6 -4 M-6 4 L6 4',
+      'M-7 -7 L7 7 M7 -7 L-7 7 M-8 0 L8 0',
+      'M-8 6 L0 -9 L8 6 M-5 -1 L5 -1'
+    ];
+    return '<g transform="translate('+x+' '+y+') rotate('+(i*30)+')">'+
+      '<circle r="14.5" /><circle r="11.6" opacity=".5"/>'+
+      '<path d="'+glyphs[i%glyphs.length]+'" /></g>';
+  }).join('');
+  const arcaneDust = Array.from({length:62}, (_, i) => {
+    const angle = (i * 137.508 + 17) * Math.PI / 180;
+    const radius = 36 + (i % 14) * 12;
+    const x = Math.round(Math.cos(angle) * radius);
+    const y = Math.round(Math.sin(angle) * radius);
+    const driftX = Math.round(Math.cos(angle) * (45 + i % 100));
+    const driftY = Math.round(Math.sin(angle) * (45 + i % 100) - 30);
+    return '<i style="--px:'+x+'px;--py:'+y+'px;--mx:'+driftX+'px;--my:'+driftY+
+      'px;--d:'+(i*79%1080)+'ms;--sz:'+(1+(i%4))+'px"></i>';
   }).join('');
   pageSweep.innerHTML = `
-    <div class="cassxp-magic-scene">
-      <div class="cassxp-magic-aura"></div>
-      <div class="cassxp-magic-spire"></div>
-      <div class="cassxp-magic-flash"></div>
-      <div class="cassxp-magic-orbit orbit-one"></div>
-      <div class="cassxp-magic-orbit orbit-two"></div>
-      <div class="cassxp-magic-floor"></div>
-      <div class="cassxp-magic-floor floor-inner"></div>
-      <div class="cassxp-magic-core"></div>
-      <div class="cassxp-magic-particles">${magicParticles}</div>
-      <div class="cassxp-magic-sparks"></div>
+    <div class="cassxp-arcane-mist mist-a"></div>
+    <div class="cassxp-arcane-mist mist-b"></div>
+    <div class="cassxp-arcane-halo"></div>
+    <div class="cassxp-arcane-circle">
+      <svg viewBox="0 0 500 500" class="cassxp-arcane-svg" aria-hidden="true" focusable="false">
+        <g class="arcane-outer">
+          <circle class="arcane-stroke outer-glow" cx="250" cy="250" r="228"/>
+          <circle class="arcane-stroke" cx="250" cy="250" r="220"/>
+          <circle class="arcane-stroke" cx="250" cy="250" r="185"/>
+          <circle class="arcane-dotted" cx="250" cy="250" r="232"/>
+          <g class="arcane-ticks">${arcaneTicks}</g>
+          <g class="arcane-runes">${arcaneRunes}</g>
+        </g>
+        <g class="arcane-mid">
+          <circle class="arcane-stroke" cx="250" cy="250" r="176"/>
+          <circle class="arcane-stroke subtle" cx="250" cy="250" r="167"/>
+          <circle class="arcane-stroke" cx="250" cy="250" r="137"/>
+          <polygon class="arcane-stroke subtle" points="${arcanePolygon(8,168)}"/>
+          <polygon class="arcane-stroke" points="${arcaneStar(8,3,170)}"/>
+          <polygon class="arcane-stroke subtle" points="${arcanePolygon(12,148)}"/>
+        </g>
+        <g class="arcane-inner">
+          <circle class="arcane-stroke" cx="250" cy="250" r="115"/>
+          <circle class="arcane-stroke subtle" cx="250" cy="250" r="102"/>
+          <polygon class="arcane-stroke" points="${arcaneStar(5,2,104)}"/>
+          <polygon class="arcane-stroke subtle" points="${arcanePolygon(6,112)}"/>
+          <circle class="arcane-stroke" cx="250" cy="250" r="69"/>
+          <circle class="arcane-stroke subtle" cx="250" cy="250" r="53"/>
+          <polygon class="arcane-stroke" points="${arcaneStar(8,3,51)}"/>
+          <path class="arcane-symbol" d="M250 206 L250 294 M222 228 L278 272 M278 228 L222 272 M229 250 L271 250 M241 217 L259 283 M259 217 L241 283"/>
+        </g>
+      </svg>
     </div>
-    <div class="cassxp-magic-caption">
-      <span>CASS<span class="cassxp-magic-xp">XP</span></span>
-      <small>ABRINDO PORTAL PARA</small>
+    <div class="cassxp-arcane-dust">${arcaneDust}</div>
+    <div class="cassxp-arcane-flare"></div>
+    <div class="cassxp-arcane-caption">
+      <span>CASS<span class="cassxp-arcane-xp">XP</span></span>
+      <small>ABRINDO PORTAL</small>
       <strong class="cassxp-fx-destination">O UNIVERSO CASSXP</strong>
     </div>`;
   document.body.appendChild(pageSweep);
@@ -327,7 +378,7 @@
 
       const [html] = await Promise.all([
         responsePromise,
-        sleep(gentleMotion ? 650 : 2050)
+        sleep(gentleMotion ? 650 : 2720)
       ]);
       if (current !== serial) return;
 
@@ -361,7 +412,7 @@
       }
       if (doMotion) {
         // Pausa curta para a marca ficar visível e legível.
-        await sleep(gentleMotion ? 250 : 280);
+        await sleep(gentleMotion ? 240 : 280);
         if (current !== serial) return;
         pageSweep.classList.add('is-leaving');
         if (!gentleMotion && incoming && typeof incoming.animate === 'function') {
@@ -370,7 +421,7 @@
             {opacity:1,transform:'translateY(0)',filter:'blur(0)'}
           ], {duration:440,easing:'cubic-bezier(.18,.7,.15,1)'});
         }
-        await sleep(gentleMotion ? 450 : 850);
+        await sleep(gentleMotion ? 450 : 760);
         if (current === serial) resetPageFx();
       }
       if (location.hostname === 'cassxp.github.io' && typeof window.gtag === 'function') {
