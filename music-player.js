@@ -223,12 +223,41 @@
   if (preview || !['https:', 'http:'].includes(location.protocol)) return;
 
   let serial = 0;
+  // Efeito cinematográfico suave ao navegar, sem recriar o player de música.
+  const pageSweep = document.createElement('div');
+  pageSweep.className = 'cassxp-page-sweep';
+  pageSweep.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(pageSweep);
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let leavingAnimation = null;
+  let enteringAnimation = null;
+  function resetPageFx() {
+    if (leavingAnimation) { leavingAnimation.cancel(); leavingAnimation = null; }
+    if (enteringAnimation) { enteringAnimation.cancel(); enteringAnimation = null; }
+    pageSweep.classList.remove('is-active');
+  }
+  function scrollToDestination(url) {
+    // Não herda o scroll suave da página anterior durante a entrada.
+    const prev = document.documentElement.style.scrollBehavior;
+    document.documentElement.style.scrollBehavior = 'auto';
+    if (url.hash) {
+      let target = null;
+      try { target = document.getElementById(decodeURIComponent(url.hash.slice(1))); } catch (_) {}
+      if (target) target.scrollIntoView({block:'start', behavior:'instant'});
+      else window.scrollTo({top:0, behavior:'instant'});
+    } else {
+      window.scrollTo({top:0, behavior:'instant'});
+    }
+    document.documentElement.style.scrollBehavior = prev;
+  }
   function isInternal(url) {
     return url.origin === location.origin && routes.has(url.pathname);
   }
   async function transition(url, push = true) {
     const current = ++serial;
+    resetPageFx();
     try {
+      // Busca o destino antes do fade para não deixar uma tela vazia na rede lenta.
       const response = await fetch(url.pathname + url.search, {credentials: 'same-origin'});
       if (!response.ok) throw new Error('Página não encontrada');
       const html = await response.text();
@@ -237,7 +266,22 @@
       const incoming = next.querySelector('main.page-main');
       const existing = document.querySelector('main.page-main');
       if (!incoming || !existing) throw new Error('Estrutura diferente');
+
+      const animatePage = !reducedMotion.matches && typeof existing.animate === 'function';
+      if (animatePage) {
+        // Faixa de luz roxa cruza a tela enquanto o conteúdo desaparece.
+        pageSweep.classList.add('is-active');
+        leavingAnimation = existing.animate([
+          {opacity:1, transform:'translateY(0) scale(1)', filter:'blur(0px)'},
+          {opacity:0, transform:'translateY(-9px) scale(.992)', filter:'blur(5px)'}
+        ], {duration:185, easing:'cubic-bezier(.55,0,1,.45)', fill:'forwards'});
+        await leavingAnimation.finished.catch(() => {});
+        if (current !== serial) return;
+      }
+
       existing.replaceWith(incoming);
+      // A página de Jade e outras áreas usam classes específicas no body.
+      document.body.className = next.body.className;
       document.title = next.title;
       for (const selector of ['meta[name="description"]','link[rel="canonical"]','meta[property="og:title"]','meta[property="og:description"]','meta[property="og:image"]']) {
         const a = next.head.querySelector(selector), b = document.head.querySelector(selector);
@@ -251,16 +295,31 @@
       document.querySelector('.nav')?.classList.remove('open');
       document.querySelector('.menu-toggle')?.setAttribute('aria-expanded','false');
       if (push) history.pushState({cassxp:true},'',url.pathname+url.search+url.hash);
+      scrollToDestination(url);
       document.dispatchEvent(new CustomEvent('cassxp:pagechange', {detail:{url:url.href}}));
-      if (url.hash) {
-        requestAnimationFrame(() => document.getElementById(decodeURIComponent(url.hash.slice(1)))?.scrollIntoView());
-      } else window.scrollTo(0,0);
+
+      if (animatePage && typeof incoming.animate === 'function') {
+        enteringAnimation = incoming.animate([
+          {opacity:0, transform:'translateY(17px) scale(.988)', filter:'blur(5px)'},
+          {opacity:1, transform:'translateY(0) scale(1)', filter:'blur(0px)'}
+        ], {duration:405, easing:'cubic-bezier(.18,.7,.18,1)', fill:'both'});
+        const thisAnimation = enteringAnimation;
+        thisAnimation.finished.catch(() => {}).finally(() => {
+          if (current === serial) {
+            pageSweep.classList.remove('is-active');
+            if (enteringAnimation === thisAnimation) enteringAnimation = null;
+          }
+        });
+      } else {
+        pageSweep.classList.remove('is-active');
+      }
       // A medição do app.js é carregada apenas no domínio oficial.
       if (location.hostname === 'cassxp.github.io' && typeof window.gtag === 'function') {
         window.gtag('event','page_view', {page_location:url.href, page_title:document.title});
       }
     } catch (_) {
       if (current !== serial) return;
+      resetPageFx();
       if (push) location.assign(url.href);
       else location.reload();
     }
