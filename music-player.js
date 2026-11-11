@@ -6,14 +6,12 @@
   'use strict';
   if (document.getElementById('cassxp-music')) return;
 
-  const AUDIO_URL = location.hostname === 'cassxp.github.io'
-    ? '/7-rings.mp3' : 'https://cassxp.github.io/7-rings.mp3';
-  // A segunda faixa é ativada somente depois que seu arquivo MP3 existe no site.
-  const FLOWER_URL = location.hostname === 'cassxp.github.io'
-    ? '/flower-in-a-hurricane.mp3' : 'https://cassxp.github.io/flower-in-a-hurricane.mp3';
+  // Playlist CassXP: 7 Rings, Flower in a Hurricane e Witch House.
+  const base = location.hostname === 'cassxp.github.io' ? '' : 'https://cassxp.github.io';
   const TRACKS = [
-    {url: AUDIO_URL, title: '7 rings', artist: 'Ariana Grande'},
-    {url: FLOWER_URL, title: 'Flower in a Hurricane', artist: 'CassXP · Playlist'}
+    {url: base + '/7-rings.mp3', title: '7 rings', artist: 'Ariana Grande', available: true},
+    {url: base + '/flower-in-a-hurricane.mp3', title: 'Flower in a Hurricane', artist: 'CassXP · Playlist', available: false},
+    {url: base + '/witch-house.mp3', title: 'Witch House', artist: 'CassXP · Playlist', available: false}
   ];
   const routes = new Set(['/', '/index.html', '/clips.html', '/news.html', '/jadedevonne.html', '/conheca-cass.html', '/contact.html', '/vods.html']);
   const preview = document.querySelector('.demo-page') !== null;
@@ -28,70 +26,97 @@
   el.innerHTML = `
     <div class="music-art" aria-hidden="true">♫</div>
     <div class="music-info"><strong>7 rings</strong><span>Ariana Grande</span></div>
+    <button class="music-prev" type="button" aria-label="Música anterior" title="Música anterior">⏮</button>
     <button class="music-toggle" type="button" aria-label="Reproduzir música" title="Reproduzir música">▶</button>
+    <button class="music-next" type="button" aria-label="Próxima música" title="Próxima música">⏭</button>
     <label class="music-volume-label"><span class="sr-only">Volume da música</span>
       <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m11 5-5 4H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>
       <input class="music-volume" type="range" min="0" max="100" step="1" value="40" aria-label="Volume da música" />
     </label>
     <span class="music-feedback sr-only" role="status" aria-live="polite"></span>
-    <audio preload="metadata" loop playsinline aria-label="Música do site CassXP"></audio>`;
+    <audio preload="metadata" playsinline aria-label="Música do site CassXP"></audio>`;
   document.body.appendChild(el);
 
   const audio = el.querySelector('audio');
   const toggle = el.querySelector('.music-toggle');
+  const previous = el.querySelector('.music-prev');
+  const next = el.querySelector('.music-next');
   const volume = el.querySelector('.music-volume');
   const feedback = el.querySelector('.music-feedback');
-  let pausedByUser = false;
-  let lastStored = -1;
-  let waitingForGesture = false;
-  let trackIndex = 0;
-  let flowerAvailable = false;
   const songName = el.querySelector('.music-info strong');
   const songArtist = el.querySelector('.music-info span');
-  const updateTrackLabel = () => {
-    const track = TRACKS[trackIndex];
-    songName.textContent = track.title;
-    songArtist.textContent = track.artist;
-    audio.setAttribute('aria-label', track.title);
-  };
-  const savedVolume = Number(get('volume'));
-  const startVolume = get('volume') !== null && Number.isFinite(savedVolume)
-    ? Math.min(100, Math.max(0, savedVolume)) : 40;
+  let pausedByUser = false;
+  let waitingForGesture = false;
+  let lastStored = -1;
+  let trackIndex = 0;
+  let transitionRequested = false;
+
+  const storedVolume = Number(get('volume'));
+  const startVolume = get('volume') !== null && Number.isFinite(storedVolume)
+    ? Math.min(100, Math.max(0, storedVolume)) : 40;
   volume.value = startVolume;
   audio.volume = startVolume / 100;
-  audio.src = AUDIO_URL;
-  // Até o arquivo da segunda faixa ser publicado, 7 rings continua em loop.
-  audio.loop = true;
-  updateTrackLabel();
 
-  const status = message => {
+  function status(message) {
     feedback.textContent = message || '';
-    el.title = message || 'Controle de música — ' + TRACKS[trackIndex].title;
-  };
-  const render = () => {
+    el.title = message || 'CassXP — ' + TRACKS[trackIndex].title;
+  }
+  function render() {
     const playing = !audio.paused && !audio.ended;
     toggle.textContent = playing ? 'Ⅱ' : '▶';
     toggle.setAttribute('aria-label', playing ? 'Pausar música' : 'Reproduzir música');
     toggle.setAttribute('aria-pressed', String(playing));
     toggle.title = playing ? 'Pausar música' : 'Reproduzir música';
     el.classList.toggle('is-playing', playing);
-  };
-  const attemptPlay = () => {
+  }
+  function syncLabel() {
+    const track = TRACKS[trackIndex];
+    songName.textContent = track.title;
+    songArtist.textContent = track.artist;
+    audio.setAttribute('aria-label', track.title);
+    status('');
+  }
+  function attemptPlay() {
     if (pausedByUser || !audio.paused) return;
     try {
-      const promise = audio.play();
-      if (promise && typeof promise.catch === 'function') promise.catch(err => {
+      const result = audio.play();
+      if (result && typeof result.catch === 'function') result.catch(err => {
         render();
         if (err && err.name === 'NotAllowedError') {
           waitingForGesture = true;
-          status('Seu navegador requer um clique para liberar o áudio.');
+          status('Clique em reproduzir para liberar o áudio.');
         } else if (!err || err.name !== 'AbortError') {
-          status('Não foi possível carregar a música.');
+          status('Não foi possível reproduzir esta música.');
         }
       });
-    } catch (_) { status('Toque em reproduzir para ouvir.'); }
-  };
-
+    } catch (_) { status('Clique em reproduzir para ouvir.'); }
+  }
+  function chooseTrack(index, keepPaused = false) {
+    trackIndex = index;
+    const track = TRACKS[index];
+    lastStored = -1;
+    put('time', 0);
+    put('track', index);
+    audio.src = track.url;
+    audio.loop = false;
+    syncLabel();
+    if (!keepPaused) {
+      pausedByUser = false;
+      attemptPlay();
+    }
+    render();
+  }
+  function availableIndices() { return TRACKS.map((track, i) => track.available ? i : -1).filter(i => i >= 0); }
+  function step(direction) {
+    const playable = availableIndices();
+    if (!playable.length) return;
+    const pos = playable.indexOf(trackIndex);
+    const nextPos = pos < 0 ? 0 : (pos + direction + playable.length) % playable.length;
+    chooseTrack(playable[nextPos]);
+    if (playable.length === 1) status('As outras faixas ainda não estão disponíveis no site.');
+  }
+  previous.addEventListener('click', () => step(-1));
+  next.addEventListener('click', () => step(1));
   toggle.addEventListener('click', () => {
     if (audio.paused) {
       pausedByUser = false;
@@ -110,40 +135,18 @@
   });
   audio.addEventListener('playing', () => { waitingForGesture = false; status(''); render(); });
   audio.addEventListener('pause', render);
-  function selectTrack(index) {
-    trackIndex = index;
-    lastStored = -1;
-    put('time', 0);
-    audio.src = TRACKS[index].url;
-    audio.loop = !flowerAvailable;
-    updateTrackLabel();
-    attemptPlay();
-  }
-  audio.addEventListener('ended', () => {
-    if (flowerAvailable && !pausedByUser) {
-      selectTrack((trackIndex + 1) % TRACKS.length);
-    }
-  });
+  audio.addEventListener('ended', () => step(1));
   audio.addEventListener('error', () => {
-    if (trackIndex === 1) {
-      flowerAvailable = false;
-      status('A segunda música está indisponível. Retomando 7 rings.');
-      selectTrack(0);
-    } else {
-      status('Áudio indisponível no momento.');
-      render();
-    }
+    if (transitionRequested) return;
+    transitionRequested = true;
+    const badTrack = TRACKS[trackIndex];
+    badTrack.available = false;
+    const remaining = availableIndices();
+    if (remaining.length && remaining[0] !== trackIndex) step(1);
+    else status('Áudio indisponível neste momento.');
+    transitionRequested = false;
+    render();
   });
-  // Testa se o MP3 foi publicado, sem expor uma faixa que ainda não existe.
-  if (location.protocol === 'https:' && location.hostname === 'cassxp.github.io') {
-    fetch(FLOWER_URL, {method:'HEAD'}).then(response => {
-      if (!response.ok) return;
-      const type = response.headers.get('content-type') || '';
-      if (!/audio|octet-stream/i.test(type)) return;
-      flowerAvailable = true;
-      audio.loop = false;
-    }).catch(() => { /* Mantém apenas a primeira música enquanto faltar o arquivo. */ });
-  }
   audio.addEventListener('loadedmetadata', () => {
     const oldTime = Number(get('time'));
     if (Number.isFinite(oldTime) && oldTime > 0 && oldTime < audio.duration) {
@@ -154,8 +157,18 @@
     const second = Math.floor(audio.currentTime);
     if (second % 4 === 0 && second !== lastStored) { lastStored = second; put('time', audio.currentTime); }
   });
-  // Tenta iniciar automaticamente; browsers podem bloquear áudio sem uma interação.
-  // No primeiro gesto real do visitante, tenta novamente sem interromper a navegação.
+  // Só adiciona à rotação faixas cujo arquivo de áudio foi efetivamente publicado.
+  if (location.protocol === 'https:' && location.hostname === 'cassxp.github.io') {
+    TRACKS.slice(1).forEach(async track => {
+      try {
+        const response = await fetch(track.url, {method:'HEAD'});
+        const type = response.headers.get('content-type') || '';
+        track.available = response.ok && /audio|octet-stream/i.test(type);
+      } catch (_) { track.available = false; }
+    });
+  }
+  const savedTrack = Number(get('track'));
+  chooseTrack(Number.isInteger(savedTrack) && savedTrack >= 0 && savedTrack < TRACKS.length && TRACKS[savedTrack].available ? savedTrack : 0, true);
   const gesture = e => {
     if (!waitingForGesture || pausedByUser || !audio.paused || el.contains(e.target)) return;
     attemptPlay();
