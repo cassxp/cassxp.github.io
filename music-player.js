@@ -249,9 +249,11 @@
     'jadedevonne.html':'JADE DEVONNE', 'conheca-cass.html':'CONHEÇA CASS',
     'contact.html':'CONTATO', 'news.html':'CLIPES'
   };
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  // ?magia=1 é uma prévia voluntária: reproduz a animação mesmo com movimento reduzido.
-  const forceMagic = new URLSearchParams(location.search).get('magia') === '1';
+  // A animação foi solicitada explicitamente para este site. Um visitante pode
+  // optar pela versão suave com ?magia=reduzida, sem afetar a navegação.
+  const magicParam = new URLSearchParams(location.search).get('magia');
+  const forceMagic = magicParam === '1';
+  const reduceMagic = magicParam === 'reduzida';
   const sleep = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));
 
   function stopArcane() {
@@ -264,12 +266,13 @@
     const bounds = pageSweep.getBoundingClientRect();
     magicW = Math.max(1, Math.round(bounds.width || innerWidth));
     magicH = Math.max(1, Math.round(bounds.height || innerHeight));
-    magicScale = Math.min(devicePixelRatio || 1, 2);
+    magicScale = 1; // Evita custos de 4x pixels em computadores sem aceleração gráfica.
     magicCanvas.width = Math.round(magicW * magicScale);
     magicCanvas.height = Math.round(magicH * magicScale);
     magicCtx.setTransform(magicScale,0,0,magicScale,0,0);
     magicStarted = performance.now();
-    magicFrame = requestAnimationFrame(drawArcane);
+    // Primeiro quadro é pintado antes de qualquer espera/solicitação de frame.
+    drawArcane(magicStarted + 16);
   }
   function drawArcane(now) {
     if (!pageSweep.classList.contains('is-covering')) {
@@ -277,11 +280,11 @@
       return;
     }
     const ctx = magicCtx;
-    const gentle = reducedMotion.matches && !forceMagic;
-    const t = gentle ? 1.4 : (now - magicStarted) / 1000;
+    const gentle = reduceMagic;
+    const t = gentle ? 1.4 : Math.max(.13,(now - magicStarted) / 1000);
     const R = Math.min(magicW * .39, magicH * .32, 275);
     const cx = magicW / 2, cy = magicH * .43;
-    const grow = Math.min(1, t / .8);
+    const grow = Math.min(1, (t + .28) / .78);
     const entrance = 1 - Math.pow(1-grow, 3);
     ctx.clearRect(0,0,magicW,magicH);
     ctx.save();
@@ -455,7 +458,7 @@
     resetPageFx();
     // O painel CassXP aparece sempre; em movimento reduzido faz apenas fade.
     const doMotion = true;
-    const gentleMotion = reducedMotion.matches && !forceMagic;
+    const gentleMotion = reduceMagic;
     const sameDocument = onlyAnchor || displayedRoute === url.pathname + url.search;
 
     // Inicia a transição IMEDIATAMENTE no clique, sem esperar download HTML.
@@ -562,10 +565,12 @@
     const url = new URL(location.href);
     if (isInternal(url)) transition(url, false, displayedRoute === url.pathname + url.search);
   });
-  // Link de prévia do efeito: abre a página e executa a magia sem mudar seção.
+  // Prévia é iniciada assim que o DOM está pronto, sem aguardar imagens/Twitch.
   if (forceMagic) {
-    window.addEventListener('pageshow', () => {
-      transition(new URL(location.href), false, true);
-    }, {once:true});
+    const runPreview = () => requestAnimationFrame(() =>
+      transition(new URL(location.href), false, true));
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', runPreview, {once:true});
+    } else runPreview();
   }
 })();
