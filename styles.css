@@ -254,26 +254,35 @@
 .music-player.needs-interaction{border-color:#cb9deb;box-shadow:0 10px 34px rgba(0,0,0,.54),0 0 22px rgba(175,88,225,.37)}
 @media(max-width:600px){.music-player.needs-interaction .music-volume-label{display:none}.music-unlock{padding:7px 8px;font-size:10px}}
 
-/* CassXP — transição gamer cinematográfica entre as páginas.
-   A marca aparece somente durante a navegação interna, nunca na carga inicial. */
+/* CassXP — transição gamer visível imediatamente ao navegar.
+   Fases JS: pronta fora da tela → cobre e exibe CassXP → revela a nova página. */
 .cassxp-page-sweep{
   position:fixed;
   inset:0;
-  z-index:59;
+  z-index:65;
   pointer-events:none;
-  opacity:0;
+  opacity:1;
   visibility:hidden;
   overflow:hidden;
   isolation:isolate;
   background:
     radial-gradient(ellipse 70% 72% at 50% 45%,rgba(108,38,169,.62),transparent 74%),
     linear-gradient(112deg,#0e0718 0%,#251037 44%,#150b27 70%,#070611 100%);
-  transform:translateX(-104%);
-  will-change:transform,opacity;
+  transform:translate3d(-104%,0,0);
+  will-change:transform;
 }
-.cassxp-page-sweep.is-active{
+.cassxp-page-sweep.is-ready{
   visibility:visible;
-  animation:cassxp-gamer-screen-wipe 600ms cubic-bezier(.28,.62,.22,1) both;
+  transform:translate3d(-104%,0,0);
+}
+.cassxp-page-sweep.is-ready.is-covering{
+  visibility:visible;
+  transform:translate3d(0,0,0);
+  transition:transform 350ms cubic-bezier(.23,.76,.26,1);
+}
+.cassxp-page-sweep.is-ready.is-covering.is-leaving{
+  transform:translate3d(104%,0,0);
+  transition:transform 450ms cubic-bezier(.38,.04,.65,.3);
 }
 .cassxp-page-sweep::before{
   content:"";
@@ -325,14 +334,6 @@
 .cassxp-fx-line{width:105px;height:2px;margin:5px 0 10px;background:linear-gradient(90deg,transparent,#ebcdff,transparent)}
 .cassxp-fx-ident small{font-size:10px;letter-spacing:.33em;font-weight:850;color:#cb9be9}
 .cassxp-fx-destination{font-size:clamp(14px,1.6vw,20px);letter-spacing:.19em;font-weight:800;color:#fff}
-@keyframes cassxp-gamer-screen-wipe{
-  0%{opacity:0;transform:translateX(-104%) skewX(-4deg)}
-  13%{opacity:.95;transform:translateX(-34%) skewX(-3deg)}
-  30%{opacity:.97;transform:translateX(0) skewX(0)}
-  48%{opacity:.96;transform:translateX(0) skewX(0)}
-  70%{opacity:.78;transform:translateX(29%) skewX(2deg)}
-  100%{opacity:0;transform:translateX(106%) skewX(4deg)}
-}
 @media(max-width:600px){
   .cassxp-fx-ident img{width:48px;height:48px}
   .cassxp-fx-ident{gap:5px}
@@ -342,7 +343,10 @@
   .cassxp-fx-destination{font-size:13px}
 }
 @media(prefers-reduced-motion:reduce){
-  .cassxp-page-sweep,.cassxp-page-sweep.is-active{
-    animation:none!important;opacity:0!important;visibility:hidden!important
+  .cassxp-page-sweep,
+  .cassxp-page-sweep.is-ready,
+  .cassxp-page-sweep.is-ready.is-covering,
+  .cassxp-page-sweep.is-ready.is-covering.is-leaving{
+    transition:none!important;visibility:hidden!important
   }
 }
