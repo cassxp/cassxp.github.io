@@ -250,6 +250,8 @@
     'contact.html':'CONTATO', 'news.html':'CLIPES'
   };
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  // ?magia=1 é uma prévia voluntária: reproduz a animação mesmo com movimento reduzido.
+  const forceMagic = new URLSearchParams(location.search).get('magia') === '1';
   const sleep = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));
 
   function stopArcane() {
@@ -275,7 +277,8 @@
       return;
     }
     const ctx = magicCtx;
-    const t = (now - magicStarted) / 1000;
+    const gentle = reducedMotion.matches && !forceMagic;
+    const t = gentle ? 1.4 : (now - magicStarted) / 1000;
     const R = Math.min(magicW * .39, magicH * .32, 275);
     const cx = magicW / 2, cy = magicH * .43;
     const grow = Math.min(1, t / .8);
@@ -412,7 +415,8 @@
       ctx.fillStyle=flash;ctx.beginPath();ctx.arc(0,0,R*(.28+q*1.9),0,Math.PI*2);ctx.fill();
     }
     ctx.restore();
-    magicFrame=requestAnimationFrame(drawArcane);
+    if (!gentle) magicFrame=requestAnimationFrame(drawArcane);
+    else magicFrame=0;
   }
 
   function resetPageFx() {
@@ -451,7 +455,7 @@
     resetPageFx();
     // O painel CassXP aparece sempre; em movimento reduzido faz apenas fade.
     const doMotion = true;
-    const gentleMotion = reducedMotion.matches;
+    const gentleMotion = reducedMotion.matches && !forceMagic;
     const sameDocument = onlyAnchor || displayedRoute === url.pathname + url.search;
 
     // Inicia a transição IMEDIATAMENTE no clique, sem esperar download HTML.
@@ -465,7 +469,7 @@
       // Força o estado inicial antes da transição CSS, inclusive com cache quente.
       void pageSweep.offsetWidth;
       pageSweep.classList.add('is-covering');
-      if (!gentleMotion) startArcane();
+      startArcane();
     }
 
     try {
@@ -558,4 +562,10 @@
     const url = new URL(location.href);
     if (isInternal(url)) transition(url, false, displayedRoute === url.pathname + url.search);
   });
+  // Link de prévia do efeito: abre a página e executa a magia sem mudar seção.
+  if (forceMagic) {
+    window.addEventListener('pageshow', () => {
+      transition(new URL(location.href), false, true);
+    }, {once:true});
+  }
 })();
