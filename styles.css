@@ -245,3 +245,11 @@
 .music-info{max-width:164px}
 .music-info strong,.music-info span{overflow:hidden;text-overflow:ellipsis}
 @media(max-width:600px){.music-player{gap:5px}.music-prev,.music-next{width:25px;height:25px;font-size:11px}.music-info{max-width:98px}}
+
+/* CassXP: botão para ativar som quando navegador bloqueia autoplay */
+.music-unlock{border:1px solid #bc84e6;border-radius:999px;background:#7034a2;color:#fff;cursor:pointer;font:700 11px/1.15 inherit;padding:8px 11px;white-space:nowrap}
+.music-unlock:hover{background:#9250c9}
+.music-unlock:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.music-unlock[hidden]{display:none}
+.music-player.needs-interaction{border-color:#cb9deb;box-shadow:0 10px 34px rgba(0,0,0,.54),0 0 22px rgba(175,88,225,.37)}
+@media(max-width:600px){.music-player.needs-interaction .music-volume-label{display:none}.music-unlock{padding:7px 8px;font-size:10px}}
