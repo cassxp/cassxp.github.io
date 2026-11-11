@@ -34,7 +34,8 @@
       <input class="music-volume" type="range" min="0" max="100" step="1" value="40" aria-label="Volume da música" />
     </label>
     <span class="music-feedback sr-only" role="status" aria-live="polite"></span>
-    <audio preload="metadata" playsinline aria-label="Música do site CassXP"></audio>`;
+    <button class="music-unlock" type="button" hidden>Ativar som</button>
+    <audio preload="auto" autoplay playsinline aria-label="Música do site CassXP"></audio>`;
   document.body.appendChild(el);
 
   const audio = el.querySelector('audio');
@@ -43,6 +44,7 @@
   const next = el.querySelector('.music-next');
   const volume = el.querySelector('.music-volume');
   const feedback = el.querySelector('.music-feedback');
+  const unlock = el.querySelector('.music-unlock');
   const songName = el.querySelector('.music-info strong');
   const songArtist = el.querySelector('.music-info span');
   let pausedByUser = false;
@@ -61,6 +63,10 @@
     feedback.textContent = message || '';
     el.title = message || 'CassXP — ' + TRACKS[trackIndex].title;
   }
+  function showUnlock(show) {
+    unlock.hidden = !show;
+    el.classList.toggle('needs-interaction', show);
+  }
   function render() {
     const playing = !audio.paused && !audio.ended;
     toggle.textContent = playing ? 'Ⅱ' : '▶';
@@ -77,19 +83,24 @@
     status('');
   }
   function attemptPlay() {
-    if (pausedByUser || !audio.paused) return;
+    if (pausedByUser || !audio.paused || !audio.src) return;
     try {
       const result = audio.play();
       if (result && typeof result.catch === 'function') result.catch(err => {
         render();
         if (err && err.name === 'NotAllowedError') {
           waitingForGesture = true;
-          status('Clique em reproduzir para liberar o áudio.');
+          showUnlock(true);
+          status('O navegador bloqueou o áudio automático. Clique para liberar o som.');
         } else if (!err || err.name !== 'AbortError') {
           status('Não foi possível reproduzir esta música.');
         }
       });
-    } catch (_) { status('Clique em reproduzir para ouvir.'); }
+    } catch (_) {
+      waitingForGesture = true;
+      showUnlock(true);
+      status('Clique para liberar o áudio.');
+    }
   }
   function chooseTrack(index, keepPaused = false) {
     trackIndex = index;
@@ -117,12 +128,19 @@
   }
   previous.addEventListener('click', () => step(-1));
   next.addEventListener('click', () => step(1));
+  unlock.addEventListener('click', () => {
+    pausedByUser = false;
+    showUnlock(false);
+    attemptPlay();
+  });
   toggle.addEventListener('click', () => {
     if (audio.paused) {
       pausedByUser = false;
       attemptPlay();
     } else {
       pausedByUser = true;
+      waitingForGesture = false;
+      showUnlock(false);
       audio.pause();
       status('Música pausada.');
     }
@@ -133,7 +151,12 @@
     put('volume', value);
     if (!pausedByUser && audio.paused) attemptPlay();
   });
-  audio.addEventListener('playing', () => { waitingForGesture = false; status(''); render(); });
+  audio.addEventListener('playing', () => {
+    waitingForGesture = false;
+    showUnlock(false);
+    status('');
+    render();
+  });
   audio.addEventListener('pause', render);
   audio.addEventListener('ended', () => step(1));
   audio.addEventListener('error', () => {
@@ -169,16 +192,29 @@
   }
   const savedTrack = Number(get('track'));
   chooseTrack(Number.isInteger(savedTrack) && savedTrack >= 0 && savedTrack < TRACKS.length && TRACKS[savedTrack].available ? savedTrack : 0, true);
-  const gesture = e => {
-    if (!waitingForGesture || pausedByUser || !audio.paused || el.contains(e.target)) return;
+  // O navegador pode negar autoplay com som. A primeira interação
+  // real com o site deve liberar a reprodução sem exigir clique no player.
+  // Não interferir quando o visitante tiver pausado a música manualmente.
+  const gesture = event => {
+    if (pausedByUser || !audio.paused || !audio.src) return;
+    if (el.contains(event.target)) return;
+    if (event.type === 'keydown' && ['Tab','Shift','Alt','Control','Meta','Escape'].includes(event.key)) return;
+    waitingForGesture = false;
+    showUnlock(false);
     attemptPlay();
   };
+  // pointerup cobre toques, click cobre teclas/tecnologias assistivas
+  // e gestos de mouse em navegadores com ativação de usuário diferente.
   document.addEventListener('pointerdown', gesture, true);
-  document.addEventListener('keydown', e => {
-    if (['Tab','Shift','Alt','Control','Meta'].includes(e.key)) return;
-    gesture(e);
-  }, true);
-  window.addEventListener('pageshow', () => { if (!pausedByUser && audio.paused) attemptPlay(); });
+  document.addEventListener('pointerup', gesture, true);
+  document.addEventListener('click', gesture, true);
+  document.addEventListener('keydown', gesture, true);
+  window.addEventListener('pageshow', () => {
+    if (!pausedByUser && audio.paused) attemptPlay();
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && !pausedByUser && audio.paused && !waitingForGesture) attemptPlay();
+  });
   render();
   attemptPlay();
 
