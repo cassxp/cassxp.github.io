@@ -231,3 +231,9 @@
 @media(max-width:1040px){.vods-layout{grid-template-columns:minmax(0,1.5fr) minmax(235px,.75fr)}.vods-hero-copy{padding:40px 33px}}
 @media(max-width:780px){.vods-layout,.vods-library-grid{grid-template-columns:1fr}.vods-sidebar{min-height:275px}.vods-hero-panel{grid-template-columns:1fr}.vods-hero-copy{padding:35px 26px 18px}.vods-hero-art{min-height:220px}.vods-hero-art img{width:135px}.vods-art-ring.ring-one{width:205px;height:205px}.vods-art-ring.ring-two{width:290px;height:290px}.vods-art-caption{bottom:16px}.vods-player-bottom{flex-wrap:wrap}.vods-content{padding-top:48px}}
 @media(max-width:420px){.vods-hero h1{font-size:37px}.vods-hero-copy{padding:30px 21px 15px}.vods-player-header{font-size:9px;letter-spacing:.3px}.vods-player-bottom{padding:18px}.vods-player-frame,.vods-player-frame iframe{min-height:300px}.vods-add-card{padding:20px}.vods-library-poster{height:165px}}
+
+/* Destaque do VOD selecionado na biblioteca */
+.vods-library-card[aria-pressed="true"]{border-color:#d096ff;box-shadow:0 0 0 1px #c875ff77,0 12px 34px #8d35d42b}
+.vods-library-card[aria-pressed="true"] .vods-library-play{background:#8c35cc;border-color:#edcaff}
+.vods-library-card[aria-pressed="true"] .vods-library-info>span{color:#f4d8ff}
+@media (min-width:781px){.vods-library-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
