@@ -230,7 +230,32 @@
   pageSweep.setAttribute('aria-hidden', 'true');
   // Renderização real a cada quadro: órbitas, runas, traços de luz e faíscas.
   // Diferentemente da versão anterior, o desenho inteiro evolui pelo tempo.
+  // Anéis CSS/SVG independentes permanecem animados mesmo se o Canvas atrasar.
+  const backupRunes = Array.from({length:12}, (_, i) =>
+    '<g transform="rotate('+(i*30)+' 250 250)"><circle cx="250" cy="48" r="14"/>'+
+    '<path d="M244 45 L250 36 L256 45 L250 57 Z M243 47 L257 47"/></g>'
+  ).join('');
   pageSweep.innerHTML = `
+    <div class="cassxp-arcane-backup" aria-hidden="true">
+      <svg viewBox="0 0 500 500" focusable="false">
+        <g class="arcane-backup-outside">
+          <circle cx="250" cy="250" r="235"/><circle cx="250" cy="250" r="220"/>
+          <circle cx="250" cy="250" r="186"/>
+          ${backupRunes}
+        </g>
+        <g class="arcane-backup-mid">
+          <circle cx="250" cy="250" r="173"/><circle cx="250" cy="250" r="143"/>
+          <path d="M250 96 L383 327 L117 327 Z M250 404 L117 173 L383 173 Z"/>
+          <path d="M250 108 L392 250 L250 392 L108 250 Z"/>
+          <circle cx="250" cy="250" r="117"/>
+        </g>
+        <g class="arcane-backup-inside">
+          <circle cx="250" cy="250" r="101"/><circle cx="250" cy="250" r="67"/>
+          <path d="M250 145 L323 323 L145 218 L355 218 L177 323 Z"/>
+          <path d="M250 178 L250 322 M178 250 L322 250 M199 199 L301 301 M301 199 L199 301"/>
+        </g>
+      </svg>
+    </div>
     <canvas class="cassxp-arcane-canvas" aria-hidden="true"></canvas>
     <div class="cassxp-arcane-caption">
       <span>CASS<span class="cassxp-arcane-xp">XP</span></span>
@@ -418,13 +443,14 @@
       ctx.fillStyle=flash;ctx.beginPath();ctx.arc(0,0,R*(.28+q*1.9),0,Math.PI*2);ctx.fill();
     }
     ctx.restore();
+    pageSweep.classList.add("has-canvas");
     if (!gentle) magicFrame=requestAnimationFrame(drawArcane);
     else magicFrame=0;
   }
 
   function resetPageFx() {
     stopArcane();
-    pageSweep.classList.remove('is-ready','is-covering','is-leaving');
+    pageSweep.classList.remove('is-ready','is-covering','is-leaving','has-canvas');
   }
   function updateNav(url) {
     const activeUrl = url.pathname.endsWith('/news.html') ? 'clips.html'
@@ -459,6 +485,7 @@
     // O painel CassXP aparece sempre; em movimento reduzido faz apenas fade.
     const doMotion = true;
     const gentleMotion = reduceMagic;
+    pageSweep.classList.toggle('is-reduced', gentleMotion);
     const sameDocument = onlyAnchor || displayedRoute === url.pathname + url.search;
 
     // Inicia a transição IMEDIATAMENTE no clique, sem esperar download HTML.
