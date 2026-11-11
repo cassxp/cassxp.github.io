@@ -8,7 +8,7 @@
 
   const AUDIO_URL = location.hostname === 'cassxp.github.io'
     ? '/7-rings.mp3' : 'https://cassxp.github.io/7-rings.mp3';
-  const routes = new Set(['/', '/index.html', '/clips.html', '/news.html', '/jadedevonne.html', '/conheca-cass.html', '/contact.html']);
+  const routes = new Set(['/', '/index.html', '/clips.html', '/news.html', '/jadedevonne.html', '/conheca-cass.html', '/contact.html', '/vods.html']);
   const preview = document.querySelector('.demo-page') !== null;
   const storeKey = 'cassxp-streamhub-';
   const get = key => { try { return sessionStorage.getItem(storeKey + key); } catch (_) { return null; } };
