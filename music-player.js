@@ -227,7 +227,23 @@
   const pageSweep = document.createElement('div');
   pageSweep.className = 'cassxp-page-sweep';
   pageSweep.setAttribute('aria-hidden', 'true');
+  pageSweep.innerHTML = `
+    <div class="cassxp-fx-grid"></div>
+    <div class="cassxp-fx-beam"></div>
+    <div class="cassxp-fx-ident">
+      <img src="assets/avatar.webp" alt="" width="58" height="58">
+      <div class="cassxp-fx-brand">CASS<span>XP</span></div>
+      <div class="cassxp-fx-line"></div>
+      <small>ACESSANDO</small>
+      <strong class="cassxp-fx-destination">O UNIVERSO CASSXP</strong>
+    </div>`;
   document.body.appendChild(pageSweep);
+  const fxDestination = pageSweep.querySelector('.cassxp-fx-destination');
+  const pageNames = {
+    'index.html':'INÍCIO', 'clips.html':'CLIPES', 'vods.html':'VODS',
+    'jadedevonne.html':'JADE DEVONNE', 'conheca-cass.html':'CONHEÇA CASS',
+    'contact.html':'CONTATO', 'news.html':'CLIPES'
+  };
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   let leavingAnimation = null;
   let enteringAnimation = null;
@@ -269,12 +285,13 @@
 
       const animatePage = !reducedMotion.matches && typeof existing.animate === 'function';
       if (animatePage) {
-        // Faixa de luz roxa cruza a tela enquanto o conteúdo desaparece.
+        // Transição do Stream Hub: painel gamer violeta, luz prata e marca CassXP.
+        fxDestination.textContent = pageNames[url.pathname.split('/').pop() || 'index.html'] || 'CASSXP';
         pageSweep.classList.add('is-active');
         leavingAnimation = existing.animate([
           {opacity:1, transform:'translateY(0) scale(1)', filter:'blur(0px)'},
-          {opacity:0, transform:'translateY(-9px) scale(.992)', filter:'blur(5px)'}
-        ], {duration:185, easing:'cubic-bezier(.55,0,1,.45)', fill:'forwards'});
+          {opacity:0, transform:'translateY(-12px) scale(.986)', filter:'blur(6px)'}
+        ], {duration:205, easing:'cubic-bezier(.45,0,1,.45)', fill:'forwards'});
         await leavingAnimation.finished.catch(() => {});
         if (current !== serial) return;
       }
@@ -300,9 +317,9 @@
 
       if (animatePage && typeof incoming.animate === 'function') {
         enteringAnimation = incoming.animate([
-          {opacity:0, transform:'translateY(17px) scale(.988)', filter:'blur(5px)'},
+          {opacity:0, transform:'translateY(23px) scale(.986)', filter:'blur(5px)'},
           {opacity:1, transform:'translateY(0) scale(1)', filter:'blur(0px)'}
-        ], {duration:405, easing:'cubic-bezier(.18,.7,.18,1)', fill:'both'});
+        ], {duration:395, easing:'cubic-bezier(.16,.75,.22,1)', fill:'both'});
         const thisAnimation = enteringAnimation;
         thisAnimation.finished.catch(() => {}).finally(() => {
           if (current === serial) {
