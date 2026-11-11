@@ -8,6 +8,13 @@
 
   const AUDIO_URL = location.hostname === 'cassxp.github.io'
     ? '/7-rings.mp3' : 'https://cassxp.github.io/7-rings.mp3';
+  // A segunda faixa é ativada somente depois que seu arquivo MP3 existe no site.
+  const FLOWER_URL = location.hostname === 'cassxp.github.io'
+    ? '/flower-in-a-hurricane.mp3' : 'https://cassxp.github.io/flower-in-a-hurricane.mp3';
+  const TRACKS = [
+    {url: AUDIO_URL, title: '7 rings', artist: 'Ariana Grande'},
+    {url: FLOWER_URL, title: 'Flower in a Hurricane', artist: 'CassXP · Playlist'}
+  ];
   const routes = new Set(['/', '/index.html', '/clips.html', '/news.html', '/jadedevonne.html', '/conheca-cass.html', '/contact.html', '/vods.html']);
   const preview = document.querySelector('.demo-page') !== null;
   const storeKey = 'cassxp-streamhub-';
@@ -27,7 +34,7 @@
       <input class="music-volume" type="range" min="0" max="100" step="1" value="40" aria-label="Volume da música" />
     </label>
     <span class="music-feedback sr-only" role="status" aria-live="polite"></span>
-    <audio preload="metadata" loop playsinline aria-label="7 rings, Ariana Grande"></audio>`;
+    <audio preload="metadata" loop playsinline aria-label="Música do site CassXP"></audio>`;
   document.body.appendChild(el);
 
   const audio = el.querySelector('audio');
@@ -37,16 +44,29 @@
   let pausedByUser = false;
   let lastStored = -1;
   let waitingForGesture = false;
+  let trackIndex = 0;
+  let flowerAvailable = false;
+  const songName = el.querySelector('.music-info strong');
+  const songArtist = el.querySelector('.music-info span');
+  const updateTrackLabel = () => {
+    const track = TRACKS[trackIndex];
+    songName.textContent = track.title;
+    songArtist.textContent = track.artist;
+    audio.setAttribute('aria-label', track.title);
+  };
   const savedVolume = Number(get('volume'));
   const startVolume = get('volume') !== null && Number.isFinite(savedVolume)
     ? Math.min(100, Math.max(0, savedVolume)) : 40;
   volume.value = startVolume;
   audio.volume = startVolume / 100;
   audio.src = AUDIO_URL;
+  // Até o arquivo da segunda faixa ser publicado, 7 rings continua em loop.
+  audio.loop = true;
+  updateTrackLabel();
 
   const status = message => {
     feedback.textContent = message || '';
-    el.title = message || 'Controle de música — 7 rings';
+    el.title = message || 'Controle de música — ' + TRACKS[trackIndex].title;
   };
   const render = () => {
     const playing = !audio.paused && !audio.ended;
@@ -90,7 +110,40 @@
   });
   audio.addEventListener('playing', () => { waitingForGesture = false; status(''); render(); });
   audio.addEventListener('pause', render);
-  audio.addEventListener('error', () => { status('Áudio indisponível no momento.'); render(); });
+  function selectTrack(index) {
+    trackIndex = index;
+    lastStored = -1;
+    put('time', 0);
+    audio.src = TRACKS[index].url;
+    audio.loop = !flowerAvailable;
+    updateTrackLabel();
+    attemptPlay();
+  }
+  audio.addEventListener('ended', () => {
+    if (flowerAvailable && !pausedByUser) {
+      selectTrack((trackIndex + 1) % TRACKS.length);
+    }
+  });
+  audio.addEventListener('error', () => {
+    if (trackIndex === 1) {
+      flowerAvailable = false;
+      status('A segunda música está indisponível. Retomando 7 rings.');
+      selectTrack(0);
+    } else {
+      status('Áudio indisponível no momento.');
+      render();
+    }
+  });
+  // Testa se o MP3 foi publicado, sem expor uma faixa que ainda não existe.
+  if (location.protocol === 'https:' && location.hostname === 'cassxp.github.io') {
+    fetch(FLOWER_URL, {method:'HEAD'}).then(response => {
+      if (!response.ok) return;
+      const type = response.headers.get('content-type') || '';
+      if (!/audio|octet-stream/i.test(type)) return;
+      flowerAvailable = true;
+      audio.loop = false;
+    }).catch(() => { /* Mantém apenas a primeira música enquanto faltar o arquivo. */ });
+  }
   audio.addEventListener('loadedmetadata', () => {
     const oldTime = Number(get('time'));
     if (Number.isFinite(oldTime) && oldTime > 0 && oldTime < audio.duration) {
