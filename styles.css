@@ -254,347 +254,70 @@
 .music-player.needs-interaction{border-color:#cb9deb;box-shadow:0 10px 34px rgba(0,0,0,.54),0 0 22px rgba(175,88,225,.37)}
 @media(max-width:600px){.music-player.needs-interaction .music-volume-label{display:none}.music-unlock{padding:7px 8px;font-size:10px}}
 
-/* CassXP — círculo arcano magenta animado, inspirado na referência enviada.
-   Anéis SVG independentes, linhas desenhadas, símbolos, névoa e poeira cósmica.
-   A camada não interfere no DOM do player de música. */
+/* CassXP — transição arcana redesenhada com Canvas vivo.
+   O círculo é atualizado a cada quadro, independente de keyframes CSS. */
 .cassxp-page-sweep{
-  position:fixed;inset:0;z-index:9999;overflow:hidden;pointer-events:none;
-  isolation:isolate;visibility:hidden;opacity:0;
+  position:fixed;inset:0;z-index:9999;
+  pointer-events:none;overflow:hidden;isolation:isolate;
+  visibility:hidden;opacity:0;
   background:
-    radial-gradient(ellipse 46% 57% at 50% 44%,rgba(74,8,91,.4),transparent 85%),
-    radial-gradient(ellipse 78% 90% at 65% 50%,rgba(51,8,61,.6),transparent 75%),
-    linear-gradient(135deg,#100718 0%,#1c0825 43%,#0b0714 100%);
+    radial-gradient(ellipse 70% 70% at 50% 44%,rgba(79,7,97,.35),transparent 77%),
+    radial-gradient(ellipse 95% 90% at 45% 60%,#250c31 0%,#0b0616 76%);
 }
 .cassxp-page-sweep.is-ready{visibility:visible;opacity:0}
 .cassxp-page-sweep.is-ready.is-covering{
-  visibility:visible;opacity:1;transition:opacity 300ms ease-in-out;
+  visibility:visible;opacity:1;
+  transition:opacity 320ms ease;
 }
 .cassxp-page-sweep.is-ready.is-covering.is-leaving{
-  opacity:0;transition:opacity 740ms cubic-bezier(.21,.62,.23,1);
-}
-.cassxp-arcane-mist{
-  position:absolute;z-index:0;
-  width:78vw;height:82vh;left:50%;top:45%;
-  transform:translate(-50%,-50%);
-  background:
-    radial-gradient(ellipse at 35% 45%,rgba(118,22,113,.35),transparent 48%),
-    radial-gradient(ellipse at 67% 35%,rgba(115,16,139,.28),transparent 48%),
-    radial-gradient(ellipse at 55% 72%,rgba(72,17,110,.33),transparent 50%);
-  opacity:0;filter:blur(33px);
-}
-.cassxp-arcane-mist.mist-b{
-  filter:blur(55px);transform:translate(-50%,-50%) rotate(54deg);
   opacity:0;
+  transition:opacity 690ms ease-in-out;
 }
-.cassxp-arcane-halo{
-  position:absolute;z-index:1;left:50%;top:44%;
-  width:min(79vw,78vh,600px);height:min(79vw,78vh,600px);
-  transform:translate(-50%,-50%) scale(.5);
-  opacity:0;border-radius:50%;
-  background:radial-gradient(circle,rgba(224,20,177,.2),rgba(183,18,161,.18) 22%,rgba(108,14,115,.12) 42%,transparent 68%);
-  filter:blur(28px);
-}
-.cassxp-arcane-circle{
-  position:absolute;z-index:3;left:50%;top:44%;
-  width:min(82vw,74vh,520px);aspect-ratio:1;
-  transform:translate(-50%,-50%) scale(.42) rotate(-28deg);
-  opacity:0;
-  filter:drop-shadow(0 0 4px rgba(255,35,205,.9)) drop-shadow(0 0 17px rgba(219,27,207,.42));
-  will-change:transform,opacity;
-}
-.cassxp-arcane-svg{display:block;width:100%;height:100%;overflow:visible}
-.cassxp-arcane-svg .arcane-stroke,
-.cassxp-arcane-svg .arcane-dotted,
-.cassxp-arcane-svg .arcane-ticks,
-.cassxp-arcane-svg .arcane-runes,
-.cassxp-arcane-svg .arcane-symbol{
-  fill:none;stroke:#ff34d4;stroke-width:1.5;
-  stroke-linecap:round;stroke-linejoin:round;
-}
-.cassxp-arcane-svg .arcane-stroke.subtle{stroke:rgba(248,73,224,.57);stroke-width:1}
-.cassxp-arcane-svg .arcane-stroke.outer-glow{stroke:#b324b4;stroke-width:1.1}
-.cassxp-arcane-svg .arcane-dotted{stroke:#ff74e8;stroke-width:1.25;stroke-dasharray:1 9}
-.cassxp-arcane-svg .arcane-ticks{stroke-width:1.35;stroke:#fa58e5}
-.cassxp-arcane-svg .arcane-runes{stroke:#ff43e3;stroke-width:1.65}
-.cassxp-arcane-svg .arcane-runes g{filter:drop-shadow(0 0 3px #ff3ad5)}
-.cassxp-arcane-svg .arcane-symbol{stroke-width:2.9;stroke:#ff75ef;filter:drop-shadow(0 0 7px #ff35ec)}
-.cassxp-arcane-svg .arcane-outer,
-.cassxp-arcane-svg .arcane-mid,
-.cassxp-arcane-svg .arcane-inner{
-  transform-origin:center;transform-box:view-box;
-  will-change:transform;
-}
-.cassxp-arcane-dust{
-  position:absolute;z-index:4;inset:0;pointer-events:none;
-}
-.cassxp-arcane-dust i{
-  position:absolute;top:44%;left:50%;
-  width:var(--sz);height:var(--sz);
-  border-radius:50%;
-  background:#ff94ed;
-  opacity:0;
-  box-shadow:0 0 6px #ff69ec,0 0 14px #dd2fe2;
-}
-.cassxp-arcane-flare{
-  position:absolute;z-index:5;left:50%;top:44%;
-  width:min(70vw,58vh,410px);aspect-ratio:1;
-  border-radius:50%;opacity:0;transform:translate(-50%,-50%) scale(.15);
-  background:radial-gradient(circle,rgba(255,239,255,.98) 0%,rgba(255,147,245,.85) 9%,rgba(236,30,218,.43) 24%,rgba(203,35,194,.16) 42%,transparent 71%);
-  mix-blend-mode:screen;
+.cassxp-arcane-canvas{
+  position:absolute;inset:0;
+  display:block;
+  width:100%;height:100%;
+  pointer-events:none;
+  opacity:1;
 }
 .cassxp-arcane-caption{
-  position:absolute;z-index:7;left:50%;bottom:7%;
-  width:min(90vw,450px);
-  text-align:center;display:flex;flex-direction:column;align-items:center;
-  gap:3px;color:#fff;opacity:0;
-  transform:translateX(-50%);
-  text-shadow:0 0 12px #d633d7,0 0 28px #641c91;
+  position:absolute;z-index:2;
+  left:50%;bottom:7%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;
+  text-align:center;gap:3px;
+  width:min(90vw,460px);
+  color:#fff;
+  text-shadow:0 0 14px #ed32d1,0 0 27px #8a1c9d,0 2px 11px #13051a;
+  opacity:0;
 }
-.cassxp-arcane-caption>span{font-size:clamp(22px,3.6vw,36px);font-weight:900;letter-spacing:-.065em}
-.cassxp-arcane-xp{color:#ff7ce4}
-.cassxp-arcane-caption small{font-size:9px;letter-spacing:.31em;color:#ecc4ed;font-weight:800}
-.cassxp-arcane-caption strong{font-size:clamp(12px,1.5vw,17px);letter-spacing:.19em;font-weight:850}
-
-/* Primeira fase: o selo é desenhado e os anéis começam a girar. */
-.cassxp-page-sweep.is-covering .cassxp-arcane-circle{
-  animation:cassxp-arcane-manifest 1320ms cubic-bezier(.15,.7,.25,1) both;
+.cassxp-arcane-caption>span{
+  font-size:clamp(22px,3.3vw,33px);
+  line-height:1.13;font-weight:900;letter-spacing:-.065em;
 }
-.cassxp-page-sweep.is-covering .arcane-outer{
-  animation:cassxp-arcane-clockwise 2850ms cubic-bezier(.2,.34,.28,1) both;
+.cassxp-arcane-caption .cassxp-arcane-xp{color:#ff8ee8}
+.cassxp-arcane-caption small{
+  font-size:9px;font-weight:850;letter-spacing:.3em;color:#e5b5e7;
 }
-.cassxp-page-sweep.is-covering .arcane-mid{
-  animation:cassxp-arcane-counter 2780ms cubic-bezier(.2,.34,.28,1) both;
-}
-.cassxp-page-sweep.is-covering .arcane-inner{
-  animation:cassxp-arcane-center-turn 2580ms ease-out both;
-}
-.cassxp-page-sweep.is-covering .arcane-stroke,
-.cassxp-page-sweep.is-covering .arcane-symbol{
-  stroke-dasharray:1490;
-  stroke-dashoffset:1490;
-  animation:cassxp-arcane-draw 1950ms cubic-bezier(.23,.57,.28,1) 180ms forwards;
-}
-.cassxp-page-sweep.is-covering .arcane-dotted,
-.cassxp-page-sweep.is-covering .arcane-ticks,
-.cassxp-page-sweep.is-covering .arcane-runes{
-  animation:cassxp-arcane-ink 1260ms ease-out 180ms both;
-}
-.cassxp-page-sweep.is-covering .cassxp-arcane-mist.mist-a{
-  animation:cassxp-arcane-smoke-a 3200ms ease-in-out both;
-}
-.cassxp-page-sweep.is-covering .cassxp-arcane-mist.mist-b{
-  animation:cassxp-arcane-smoke-b 3200ms ease-in-out both;
-}
-.cassxp-page-sweep.is-covering .cassxp-arcane-halo{
-  animation:cassxp-arcane-halo-pulse 2480ms ease-in-out both;
-}
-.cassxp-page-sweep.is-covering .cassxp-arcane-dust i{
-  animation:cassxp-arcane-drift 1700ms cubic-bezier(.14,.38,.3,1) var(--d) both;
+.cassxp-arcane-caption strong{
+  font-size:clamp(12px,1.6vw,18px);font-weight:800;letter-spacing:.17em;
 }
 .cassxp-page-sweep.is-covering .cassxp-arcane-caption{
-  animation:cassxp-arcane-title 710ms ease-out 520ms both;
+  opacity:1;
+  animation:cassxp-canvas-title-in 700ms ease-out both;
 }
-/* Segundo ato: pulso luminoso e dissolução sobre a página de destino. */
-.cassxp-page-sweep.is-covering.is-leaving .cassxp-arcane-flare{
-  animation:cassxp-arcane-burst 720ms cubic-bezier(.1,.4,.19,1) both;
-}
-.cassxp-page-sweep.is-covering.is-leaving .cassxp-arcane-circle{
-  animation:cassxp-arcane-disperse 760ms ease-in both;
-}
-@keyframes cassxp-arcane-manifest{
-  0%{opacity:0;transform:translate(-50%,-50%) scale(.25) rotate(-30deg);filter:blur(8px)}
-  50%{opacity:.92;transform:translate(-50%,-50%) scale(.94) rotate(-8deg);filter:blur(1px)}
-  100%{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(0deg);filter:blur(0)}
-}
-@keyframes cassxp-arcane-clockwise{
-  from{transform:rotate(-60deg);opacity:.55}
-  to{transform:rotate(160deg);opacity:1}
-}
-@keyframes cassxp-arcane-counter{
-  from{transform:rotate(85deg);opacity:.5}
-  to{transform:rotate(-168deg);opacity:1}
-}
-@keyframes cassxp-arcane-center-turn{
-  from{transform:rotate(-35deg) scale(.7);opacity:.1}
-  50%{transform:rotate(14deg) scale(1.05);opacity:1}
-  to{transform:rotate(42deg) scale(1);opacity:1}
-}
-@keyframes cassxp-arcane-draw{
-  0%{stroke-dashoffset:1490}
-  100%{stroke-dashoffset:0}
-}
-@keyframes cassxp-arcane-ink{
-  from{opacity:0;filter:blur(4px)}
-  to{opacity:1;filter:blur(0)}
-}
-@keyframes cassxp-arcane-smoke-a{
-  0%{opacity:0;transform:translate(-50%,-50%) rotate(-22deg) scale(.7)}
-  45%{opacity:.86}
-  100%{opacity:.77;transform:translate(-50%,-50%) rotate(22deg) scale(1.14)}
-}
-@keyframes cassxp-arcane-smoke-b{
-  0%{opacity:0;transform:translate(-50%,-50%) rotate(46deg) scale(.6)}
-  60%{opacity:.6}
-  100%{opacity:.65;transform:translate(-50%,-50%) rotate(-20deg) scale(1.27)}
-}
-@keyframes cassxp-arcane-halo-pulse{
-  0%{opacity:0;transform:translate(-50%,-50%) scale(.2)}
-  60%{opacity:.92;transform:translate(-50%,-50%) scale(1.09)}
-  100%{opacity:.84;transform:translate(-50%,-50%) scale(1)}
-}
-@keyframes cassxp-arcane-drift{
-  0%{opacity:0;transform:translate(var(--px),var(--py)) scale(.2)}
-  22%{opacity:.94}
-  72%{opacity:.72}
-  100%{opacity:0;transform:translate(calc(var(--px) + var(--mx)),calc(var(--py) + var(--my))) scale(.1)}
-}
-@keyframes cassxp-arcane-title{
-  from{opacity:0;transform:translate(-50%,14px);filter:blur(6px)}
-  to{opacity:1;transform:translate(-50%,0);filter:blur(0)}
-}
-@keyframes cassxp-arcane-burst{
-  0%{opacity:0;transform:translate(-50%,-50%) scale(.18)}
-  28%{opacity:.93;transform:translate(-50%,-50%) scale(1.1)}
-  100%{opacity:0;transform:translate(-50%,-50%) scale(4)}
-}
-@keyframes cassxp-arcane-disperse{
-  from{opacity:1;transform:translate(-50%,-50%) scale(1);filter:blur(0)}
-  to{opacity:0;transform:translate(-50%,-50%) scale(1.45);filter:blur(10px)}
-}
-
-/* ANIMAÇÃO EXPANDIDA — o círculo não fica estático depois de se formar. */
-.cassxp-arcane-rays{
-  position:absolute;z-index:1;inset:-15%;
-  opacity:.2;
-  background:repeating-conic-gradient(from 0deg at 50% 44%,
-    transparent 0deg 6deg,rgba(255,38,205,.12) 7deg,
-    rgba(243,78,237,.19) 8deg,transparent 10deg 19deg);
-  mask-image:radial-gradient(ellipse at 50% 44%,transparent 7%,#000 26%,transparent 56%);
-  will-change:transform;
-}
-.cassxp-arcane-svg .arcane-tracer{
-  transform-box:view-box;transform-origin:center;
-  fill:none;stroke:#ffc6fb;stroke-width:3;
-  stroke-linecap:round;
-  stroke-dasharray:35 1300;
-  filter:drop-shadow(0 0 5px #ff24d8) drop-shadow(0 0 11px #ed29da);
-  opacity:.98;
-}
-.cassxp-arcane-svg .arcane-tracer circle:nth-child(2){
-  stroke:#ff43e5;stroke-width:2.3;stroke-dasharray:14 1000;
-}
-.cassxp-arcane-svg .arcane-tracer.tracer-two{stroke:#fb51d9;stroke-width:2}
-.cassxp-arcane-core{
-  position:absolute;z-index:4;top:44%;left:50%;
-  width:min(30vw,26vh,170px);aspect-ratio:1;
-  transform:translate(-50%,-50%) scale(.35);opacity:0;
-  border-radius:50%;
-  background:radial-gradient(circle,
-    rgba(255,246,255,.82) 0%,rgba(255,112,230,.5) 8%,
-    rgba(247,38,196,.23) 27%,transparent 69%);
-  mix-blend-mode:screen;
-  pointer-events:none;
-}
-.cassxp-arcane-shockwave{
-  position:absolute;z-index:2;left:50%;top:44%;
-  width:min(62vw,53vh,400px);aspect-ratio:1;
-  border:2px solid rgba(255,72,216,.68);
-  border-radius:50%;
-  box-shadow:0 0 12px #ed27cb,0 0 35px rgba(243,33,202,.56),
-    inset 0 0 20px rgba(255,48,211,.36);
-  opacity:0;
-  transform:translate(-50%,-50%) scale(.3);
-  pointer-events:none;
-}
-/* Rotações realmente contínuas, em sentidos opostos. */
-.cassxp-page-sweep.is-covering .arcane-outer{
-  animation:cassxp-arcane-rotate-clockwise 2950ms linear infinite;
-}
-.cassxp-page-sweep.is-covering .arcane-mid{
-  animation:cassxp-arcane-rotate-counter 2100ms linear infinite;
-}
-.cassxp-page-sweep.is-covering .arcane-inner{
-  animation:cassxp-arcane-rotate-clockwise 3450ms linear infinite reverse;
-}
-.cassxp-page-sweep.is-covering .arcane-tracer.tracer-one{
-  animation:cassxp-arcane-rotate-clockwise 1240ms linear infinite;
-}
-.cassxp-page-sweep.is-covering .arcane-tracer.tracer-two{
-  animation:cassxp-arcane-rotate-counter 1600ms linear infinite;
-}
-.cassxp-page-sweep.is-covering .arcane-runes{
-  animation:cassxp-arcane-rune-glow 850ms ease-in-out infinite alternate;
-}
-.cassxp-page-sweep.is-covering .cassxp-arcane-core{
-  animation:cassxp-arcane-core-pulse 820ms ease-in-out 250ms infinite alternate;
-}
-.cassxp-page-sweep.is-covering .cassxp-arcane-shockwave{
-  animation:cassxp-arcane-shock 1700ms ease-out 650ms infinite;
-}
-.cassxp-page-sweep.is-covering .cassxp-arcane-dust i{
-  animation:cassxp-arcane-drift 1650ms cubic-bezier(.15,.42,.36,1) var(--d) infinite;
-}
-.cassxp-page-sweep.is-covering .cassxp-arcane-rays{
-  animation:cassxp-arcane-rotate-clockwise 5700ms linear infinite,
-    cassxp-arcane-ray-glow 1100ms ease-in-out infinite alternate;
-}
-.cassxp-page-sweep.is-covering .cassxp-arcane-mist.mist-a{
-  animation:cassxp-arcane-smoke-a 2500ms ease-in-out infinite alternate;
-}
-.cassxp-page-sweep.is-covering .cassxp-arcane-mist.mist-b{
-  animation:cassxp-arcane-smoke-b 3100ms ease-in-out infinite alternate;
-}
-.cassxp-page-sweep.is-covering .cassxp-arcane-halo{
-  animation:cassxp-arcane-halo-pulse 1250ms ease-in-out infinite alternate;
-}
-.cassxp-page-sweep.is-covering.is-leaving .cassxp-arcane-shockwave{
-  animation:cassxp-arcane-final-shock 700ms ease-out both;
-}
-@keyframes cassxp-arcane-rotate-clockwise{
-  from{transform:rotate(0deg)}
-  to{transform:rotate(360deg)}
-}
-@keyframes cassxp-arcane-rotate-counter{
-  from{transform:rotate(0deg)}
-  to{transform:rotate(-360deg)}
-}
-@keyframes cassxp-arcane-rune-glow{
-  0%{opacity:.55;filter:drop-shadow(0 0 1px rgba(255,49,198,.65))}
-  100%{opacity:1;filter:drop-shadow(0 0 8px #ff32d6)}
-}
-@keyframes cassxp-arcane-core-pulse{
-  0%{opacity:.34;transform:translate(-50%,-50%) scale(.42)}
-  100%{opacity:1;transform:translate(-50%,-50%) scale(1.5)}
-}
-@keyframes cassxp-arcane-shock{
-  0%{opacity:0;transform:translate(-50%,-50%) scale(.2)}
-  20%{opacity:.8}
-  100%{opacity:0;transform:translate(-50%,-50%) scale(1.35)}
-}
-@keyframes cassxp-arcane-final-shock{
-  0%{opacity:.9;transform:translate(-50%,-50%) scale(.8)}
-  100%{opacity:0;transform:translate(-50%,-50%) scale(2.8)}
-}
-@keyframes cassxp-arcane-ray-glow{
-  from{opacity:.16}
-  to{opacity:.65}
+@keyframes cassxp-canvas-title-in{
+  0%{opacity:0;transform:translate(-50%,13px);filter:blur(6px)}
+  100%{opacity:1;transform:translate(-50%,0);filter:blur(0)}
 }
 @media(max-width:600px){
-  .cassxp-arcane-circle{width:min(91vw,67vh)}
-  .cassxp-arcane-halo{width:92vw;height:92vw}
-  .cassxp-arcane-caption{bottom:9%}
+  .cassxp-arcane-caption{bottom:11%}
+  .cassxp-arcane-caption>span{font-size:26px}
   .cassxp-arcane-caption small{font-size:8px}
 }
 @media(prefers-reduced-motion:reduce){
-  .cassxp-page-sweep.is-ready.is-covering{transition:opacity 180ms}
-  .cassxp-page-sweep.is-ready.is-covering.is-leaving{transition:opacity 320ms}
-  .cassxp-arcane-circle{opacity:1;transform:translate(-50%,-50%) scale(1)}
-  .cassxp-arcane-caption{opacity:1}
-  .cassxp-arcane-mist,.cassxp-arcane-halo,.cassxp-arcane-flare,
-  .cassxp-arcane-rays,.cassxp-arcane-core,.cassxp-arcane-shockwave{display:none}
-  .cassxp-arcane-svg *, .cassxp-arcane-circle,
-  .cassxp-arcane-caption,.cassxp-arcane-dust i{animation:none!important}
-  .cassxp-arcane-dust{display:none}
+  .cassxp-page-sweep.is-ready.is-covering{transition:opacity 180ms ease}
+  .cassxp-page-sweep.is-ready.is-covering.is-leaving{transition:opacity 260ms ease}
+  .cassxp-arcane-caption{opacity:1;animation:none!important}
 }
 
 /* Lives CassXP: iframe da Twitch ocupa todo o player, em 16:9. */
