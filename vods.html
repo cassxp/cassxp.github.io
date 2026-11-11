@@ -9,7 +9,7 @@
   <title>VODs | Replays das lives CassXP</title>
   <link rel="icon" type="image/webp" href="assets/avatar.webp">
   <link rel="canonical" href="https://cassxp.github.io/vods.html">
-  <link rel="stylesheet" href="styles.css?v=vods-20261111">
+  <link rel="stylesheet" href="styles.css?v=vods-20261111-library2">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CassXP">
   <meta property="og:title" content="VODs | Replays das lives CassXP">
@@ -70,19 +70,19 @@
           <article class="vods-featured">
             <div class="vods-player-header"><span class="vods-status"><span></span> REPLAY DISPONÍVEL NO CANAL</span><span>TWITCH · VOD</span></div>
             <div class="vods-player-frame">
-              <iframe id="vod-player" src="https://player.twitch.tv/?video=v2920104874&amp;parent=cassxp.github.io&amp;autoplay=false" title="Assistir à gravação CassXP na Twitch" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+              <iframe id="vod-player" src="https://player.twitch.tv/?video=v2924822626&amp;parent=cassxp.github.io&amp;autoplay=false" title="Assistir à última live CassXP na Twitch" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
             </div>
             <div class="vods-player-bottom">
-              <div><span class="vods-label">VÍDEO SELECIONADO</span><h3 id="vod-selected-title">Transmissão CassXP — replay</h3><p>Gravação compartilhada anteriormente no canal.</p></div>
-              <a id="vod-open-twitch" class="btn btn-secondary" href="https://www.twitch.tv/videos/2920104874" target="_blank" rel="noopener noreferrer">Abrir na Twitch ↗</a>
+              <div><span class="vods-label">VÍDEO SELECIONADO</span><h3 id="vod-selected-title">Última live — CassXP</h3><p id="vod-selected-description">A transmissão mais recente compartilhada por você.</p></div>
+              <a id="vod-open-twitch" class="btn btn-secondary" href="https://www.twitch.tv/videos/2924822626" target="_blank" rel="noopener noreferrer">Abrir na Twitch ↗</a>
             </div>
           </article>
           <aside class="vods-sidebar">
             <span class="eyebrow">NO SEU RITMO</span>
             <h2>Reviva a experiência.</h2>
             <p>Assista às transmissões completas com o player da Twitch, inclusive no celular. Os vídeos permanecem disponíveis conforme as regras de armazenamento do canal.</p>
-            <div class="vods-side-item"><span>01</span><div><strong>VOD em destaque</strong><small>Reveja uma transmissão do CassXP</small></div></div>
-            <div class="vods-side-item"><span>02</span><div><strong>Seu próximo replay</strong><small>Abra outro VOD pelo link no campo abaixo</small></div></div>
+            <div class="vods-side-item"><span>01</span><div><strong>Última live em destaque</strong><small>Assista à gravação mais recente compartilhada</small></div></div>
+            <div class="vods-side-item"><span>04</span><div><strong>Quatro VODs na biblioteca</strong><small>Selecione uma gravação abaixo para trocar o player</small></div></div>
             <a class="vods-sidebar-link" href="https://www.twitch.tv/cassxp/videos" target="_blank" rel="noopener noreferrer">Explorar vídeos no canal ↗</a>
           </aside>
         </div>
@@ -90,11 +90,23 @@
     </section>
     <section class="section vods-library" aria-labelledby="vod-library-title">
       <div class="container">
-        <div class="section-heading"><div><span class="eyebrow">MAIS VÍDEOS</span><h2 id="vod-library-title">Sua biblioteca de replays</h2><p>Selecione o VOD em destaque ou abra outra gravação pelo link.</p></div></div>
+        <div class="section-heading"><div><span class="eyebrow">MAIS VÍDEOS</span><h2 id="vod-library-title">Sua biblioteca de replays</h2><p>Escolha uma das quatro gravações do canal ou abra outro VOD pelo link.</p></div></div>
         <div class="vods-library-grid">
-          <button type="button" class="vods-library-card" data-vod-id="2920104874" aria-label="Assistir ao VOD 2920104874">
-            <span class="vods-library-poster"><img src="assets/brand-banner.webp" alt="Arte CassXP com coroa"><span class="vods-library-play">▶</span><span class="vods-library-number">VOD 01</span></span>
-            <span class="vods-library-info"><small>TWITCH · TRANSMISSÃO COMPLETA</small><strong>Transmissão CassXP — replay</strong><span>Reproduzir no player da página ↗</span></span>
+          <button type="button" class="vods-library-card" data-vod-id="2924822626" data-vod-title="Última live — CassXP" data-vod-description="A transmissão mais recente compartilhada por você." aria-pressed="true" aria-label="Assistir Última live — CassXP">
+            <span class="vods-library-poster"><img src="assets/brand-banner.webp" alt="Arte do canal CassXP" loading="lazy"><span class="vods-library-play">▶</span><span class="vods-library-number">ÚLTIMA LIVE</span></span>
+            <span class="vods-library-info"><small>TWITCH · TRANSMISSÃO COMPLETA</small><strong>Última live — CassXP</strong><span>Assistir VOD 2924822626 no player ↗</span></span>
+          </button>
+          <button type="button" class="vods-library-card" data-vod-id="2920104874" data-vod-title="VOD anterior — CassXP" data-vod-description="Gravação compartilhada anteriormente no canal." aria-pressed="false" aria-label="Assistir VOD anterior — CassXP">
+            <span class="vods-library-poster"><img src="assets/brand-banner.webp" alt="Arte do canal CassXP" loading="lazy"><span class="vods-library-play">▶</span><span class="vods-library-number">VOD 02</span></span>
+            <span class="vods-library-info"><small>TWITCH · TRANSMISSÃO COMPLETA</small><strong>VOD anterior — CassXP</strong><span>Assistir VOD 2920104874 no player ↗</span></span>
+          </button>
+          <button type="button" class="vods-library-card" data-vod-id="2902131178" data-vod-title="Replay CassXP — VOD 03" data-vod-description="Outra gravação da Twitch para assistir no site." aria-pressed="false" aria-label="Assistir Replay CassXP — VOD 03">
+            <span class="vods-library-poster"><img src="assets/brand-banner.webp" alt="Arte do canal CassXP" loading="lazy"><span class="vods-library-play">▶</span><span class="vods-library-number">VOD 03</span></span>
+            <span class="vods-library-info"><small>TWITCH · TRANSMISSÃO COMPLETA</small><strong>Replay CassXP — VOD 03</strong><span>Assistir VOD 2902131178 no player ↗</span></span>
+          </button>
+          <button type="button" class="vods-library-card" data-vod-id="2887110276" data-vod-title="Replay CassXP — VOD 04" data-vod-description="Outra gravação da Twitch para assistir no site." aria-pressed="false" aria-label="Assistir Replay CassXP — VOD 04">
+            <span class="vods-library-poster"><img src="assets/brand-banner.webp" alt="Arte do canal CassXP" loading="lazy"><span class="vods-library-play">▶</span><span class="vods-library-number">VOD 04</span></span>
+            <span class="vods-library-info"><small>TWITCH · TRANSMISSÃO COMPLETA</small><strong>Replay CassXP — VOD 04</strong><span>Assistir VOD 2887110276 no player ↗</span></span>
           </button>
           <div class="vods-add-card">
             <div class="vods-add-icon" aria-hidden="true">+</div>
@@ -119,7 +131,7 @@
     </div>
   </footer>
   <dialog aria-labelledby="media-title" class="modal" id="media-modal"><div class="modal-shell"><div class="modal-head"><h2 id="media-title">CassXP</h2><button aria-label="Fechar player" class="modal-close">×</button></div><div class="embed-stage" id="media-stage"></div><div class="modal-foot"><small>Conteúdo incorporado diretamente da Twitch.</small><a class="inline-link" href="https://www.twitch.tv/cassxp" id="media-external" rel="noopener noreferrer" target="_blank">Abrir na Twitch ↗</a></div></div></dialog>
-  <script src="app.js?v=20261111-vods" defer></script>
+  <script src="app.js?v=20261111-vods-library2" defer></script>
   <script src="music-player.js?v=20261111-vods" defer></script>
 </body>
 </html>
