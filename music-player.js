@@ -228,14 +228,14 @@
   const pageSweep = document.createElement('div');
   pageSweep.className = 'cassxp-page-sweep';
   pageSweep.setAttribute('aria-hidden', 'true');
-  // Partículas em raios determinísticos: leve, sem vídeo, sem rede adicional.
-  const magicParticles = Array.from({length:36}, (_, i) => {
+  // Partículas animadas para um portal mágico mais demorado (cerca de 3 segundos).
+  const magicParticles = Array.from({length:64}, (_, i) => {
     const angle = (i * 137.508 + 13) * Math.PI / 180;
-    const radius = 55 + (i % 7) * 22;
+    const radius = 68 + (i % 10) * 28;
     const dx = Math.round(Math.cos(angle) * radius);
     const dy = Math.round(Math.sin(angle) * radius * .65 - (i % 5) * 8);
-    const delay = (i * 37) % 260;
-    const size = 2 + (i % 4);
+    const delay = (i * 47) % 850;
+    const size = 2 + (i % 5);
     return '<i style="--dx:'+dx+'px;--dy:'+dy+'px;--delay:'+delay+'ms;--size:'+size+'px"></i>';
   }).join('');
   pageSweep.innerHTML = `
@@ -327,7 +327,7 @@
 
       const [html] = await Promise.all([
         responsePromise,
-        sleep(gentleMotion ? 185 : 510)
+        sleep(gentleMotion ? 650 : 2050)
       ]);
       if (current !== serial) return;
 
@@ -361,7 +361,7 @@
       }
       if (doMotion) {
         // Pausa curta para a marca ficar visível e legível.
-        await sleep(gentleMotion ? 160 : 290);
+        await sleep(gentleMotion ? 250 : 280);
         if (current !== serial) return;
         pageSweep.classList.add('is-leaving');
         if (!gentleMotion && incoming && typeof incoming.animate === 'function') {
@@ -370,7 +370,7 @@
             {opacity:1,transform:'translateY(0)',filter:'blur(0)'}
           ], {duration:440,easing:'cubic-bezier(.18,.7,.15,1)'});
         }
-        await sleep(gentleMotion ? 230 : 470);
+        await sleep(gentleMotion ? 450 : 850);
         if (current === serial) resetPageFx();
       }
       if (location.hostname === 'cassxp.github.io' && typeof window.gtag === 'function') {
