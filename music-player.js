@@ -10,7 +10,7 @@
   const base = location.hostname === 'cassxp.github.io' ? '' : 'https://cassxp.github.io';
   const TRACKS = [
     {url: base + '/7-rings.mp3', title: '7 rings', artist: 'Ariana Grande', available: true},
-    {url: base + '/flower-in-a-hurricane.mp3', title: 'Flower in a Hurricane', artist: 'CassXP · Playlist', available: false},
+    {url: base + '/flower-in-a-hurricane.webm', title: 'Flower in a Hurricane', artist: 'CassXP · Playlist', available: false},
     {url: base + '/witch-house.mp3', title: 'Witch House', artist: 'CassXP · Playlist', available: false}
   ];
   const routes = new Set(['/', '/index.html', '/clips.html', '/news.html', '/jadedevonne.html', '/conheca-cass.html', '/contact.html', '/vods.html']);
