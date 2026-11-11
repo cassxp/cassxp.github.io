@@ -13,7 +13,7 @@
     {url: base + '/flower-in-a-hurricane.mp3', title: 'Flower in a Hurricane', artist: 'CassXP · Playlist', available: false},
     {url: base + '/Witch%20House.mp3', title: 'Witch House', artist: 'CassXP · Playlist', available: false}
   ];
-  const routes = new Set(['/', '/index.html', '/clips.html', '/news.html', '/jadedevonne.html', '/conheca-cass.html', '/contact.html', '/vods.html']);
+  const routes = new Set(['/', '/index.html', '/clips.html', '/lives.html', '/news.html', '/jadedevonne.html', '/conheca-cass.html', '/contact.html', '/vods.html']);
   const preview = document.querySelector('.demo-page') !== null;
   const storeKey = 'cassxp-streamhub-';
   const get = key => { try { return sessionStorage.getItem(storeKey + key); } catch (_) { return null; } };
@@ -241,7 +241,7 @@
   document.body.appendChild(pageSweep);
   const fxDestination = pageSweep.querySelector('.cassxp-fx-destination');
   const pageNames = {
-    'index.html':'INÍCIO', 'clips.html':'CLIPES', 'vods.html':'VODS',
+    'index.html':'INÍCIO', 'lives.html':'LIVES', 'clips.html':'CLIPES', 'vods.html':'VODS',
     'jadedevonne.html':'JADE DEVONNE', 'conheca-cass.html':'CONHEÇA CASS',
     'contact.html':'CONTATO', 'news.html':'CLIPES'
   };
