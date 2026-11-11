@@ -264,10 +264,10 @@
     radial-gradient(ellipse 70% 70% at 50% 44%,rgba(79,7,97,.35),transparent 77%),
     radial-gradient(ellipse 95% 90% at 45% 60%,#250c31 0%,#0b0616 76%);
 }
-.cassxp-page-sweep.is-ready{visibility:visible;opacity:0}
+.cassxp-page-sweep.is-ready{visibility:visible;opacity:1}
 .cassxp-page-sweep.is-ready.is-covering{
   visibility:visible;opacity:1;
-  transition:opacity 320ms ease;
+  transition:none; /* O círculo já surge no primeiro quadro; sem tela roxa inicial. */
 }
 .cassxp-page-sweep.is-ready.is-covering.is-leaving{
   opacity:0;
@@ -352,7 +352,7 @@
 .cassxp-page-sweep.is-covering .arcane-backup-inside{
   animation:cassxp-fallback-clockwise 1150ms linear infinite reverse;
 }
-.cassxp-page-sweep.has-canvas .cassxp-arcane-backup{opacity:.32}
+.cassxp-page-sweep.has-canvas .cassxp-arcane-backup{opacity:.76}
 .cassxp-arcane-canvas{z-index:1}
 @keyframes cassxp-fallback-clockwise{
   from{transform:rotate(0deg)}to{transform:rotate(360deg)}
@@ -361,8 +361,8 @@
   from{transform:rotate(0deg)}to{transform:rotate(-360deg)}
 }
 @keyframes cassxp-fallback-appear{
-  from{transform:translate(-50%,-50%) scale(.48);opacity:.27}
-  to{transform:translate(-50%,-50%) scale(1);opacity:.87}
+  from{transform:translate(-50%,-50%) scale(.87);opacity:.88}
+  to{transform:translate(-50%,-50%) scale(1);opacity:1}
 }
 @keyframes cassxp-fallback-breathe{
   from{filter:drop-shadow(0 0 5px rgba(247,66,225,.8))}
