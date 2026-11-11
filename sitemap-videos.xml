@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
+  <url>
+    <loc>https://cassxp.github.io/vods.html</loc>
+    <video:video>
+      <video:thumbnail_loc>https://cassxp.github.io/assets/brand-banner.webp</video:thumbnail_loc>
+      <video:title>Última live — CassXP</video:title>
+      <video:description>A transmissão mais recente compartilhada por você.</video:description>
+      <video:player_loc>https://player.twitch.tv/?video=v2924822626&amp;parent=cassxp.github.io&amp;autoplay=false</video:player_loc>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://cassxp.github.io/clips.html</loc>
+    <video:video>
+      <video:thumbnail_loc>https://cassxp.github.io/assets/dbd.webp</video:thumbnail_loc>
+      <video:title>Dead by Daylight — momento da live</video:title>
+      <video:description>Suspense, partidas e momentos da transmissão</video:description>
+      <video:player_loc>https://clips.twitch.tv/embed?clip=InventiveGeniusCroquetteSmoocherZ-tDJomPFxBp4kDLpW&amp;parent=cassxp.github.io&amp;autoplay=false</video:player_loc>
+    </video:video>
+    <video:video>
+      <video:thumbnail_loc>https://cassxp.github.io/assets/gta.webp</video:thumbnail_loc>
+      <video:title>GTA RP — momentos do roleplay</video:title>
+      <video:description>Histórias e situações inesperadas na cidade</video:description>
+      <video:player_loc>https://clips.twitch.tv/embed?clip=SuspiciousCarefulPheasantOSsloth-zF2IuhRCfV8XvX3c&amp;parent=cassxp.github.io&amp;autoplay=false</video:player_loc>
+    </video:video>
+    <video:video>
+      <video:thumbnail_loc>https://cassxp.github.io/assets/cortes.webp</video:thumbnail_loc>
+      <video:title>Dead by Daylight — mais um destaque</video:title>
+      <video:description>Outro corte disponível no canal da Twitch</video:description>
+      <video:player_loc>https://clips.twitch.tv/embed?clip=PrettiestCredulousCodNerfRedBlaster-osHDmoGFWqBxpXr8&amp;parent=cassxp.github.io&amp;autoplay=false</video:player_loc>
+    </video:video>
+  </url>
+</urlset>
