@@ -256,13 +256,13 @@
       '<circle r="14.5" /><circle r="11.6" opacity=".5"/>'+
       '<path d="'+glyphs[i%glyphs.length]+'" /></g>';
   }).join('');
-  const arcaneDust = Array.from({length:62}, (_, i) => {
+  const arcaneDust = Array.from({length:94}, (_, i) => {
     const angle = (i * 137.508 + 17) * Math.PI / 180;
-    const radius = 36 + (i % 14) * 12;
+    const radius = 24 + (i % 19) * 12;
     const x = Math.round(Math.cos(angle) * radius);
     const y = Math.round(Math.sin(angle) * radius);
-    const driftX = Math.round(Math.cos(angle) * (45 + i % 100));
-    const driftY = Math.round(Math.sin(angle) * (45 + i % 100) - 30);
+    const driftX = Math.round(Math.cos(angle) * (55 + i % 125));
+    const driftY = Math.round(Math.sin(angle) * (55 + i % 125) - 30);
     return '<i style="--px:'+x+'px;--py:'+y+'px;--mx:'+driftX+'px;--my:'+driftY+
       'px;--d:'+(i*79%1080)+'ms;--sz:'+(1+(i%4))+'px"></i>';
   }).join('');
@@ -270,6 +270,7 @@
     <div class="cassxp-arcane-mist mist-a"></div>
     <div class="cassxp-arcane-mist mist-b"></div>
     <div class="cassxp-arcane-halo"></div>
+    <div class="cassxp-arcane-rays"></div>
     <div class="cassxp-arcane-circle">
       <svg viewBox="0 0 500 500" class="cassxp-arcane-svg" aria-hidden="true" focusable="false">
         <g class="arcane-outer">
@@ -279,6 +280,14 @@
           <circle class="arcane-dotted" cx="250" cy="250" r="232"/>
           <g class="arcane-ticks">${arcaneTicks}</g>
           <g class="arcane-runes">${arcaneRunes}</g>
+        </g>
+        <g class="arcane-tracer tracer-one">
+          <circle cx="250" cy="250" r="214" />
+          <circle cx="250" cy="250" r="190" />
+        </g>
+        <g class="arcane-tracer tracer-two">
+          <circle cx="250" cy="250" r="158" />
+          <circle cx="250" cy="250" r="120" />
         </g>
         <g class="arcane-mid">
           <circle class="arcane-stroke" cx="250" cy="250" r="176"/>
@@ -301,6 +310,8 @@
       </svg>
     </div>
     <div class="cassxp-arcane-dust">${arcaneDust}</div>
+    <div class="cassxp-arcane-core"></div>
+    <div class="cassxp-arcane-shockwave"></div>
     <div class="cassxp-arcane-flare"></div>
     <div class="cassxp-arcane-caption">
       <span>CASS<span class="cassxp-arcane-xp">XP</span></span>
@@ -378,7 +389,7 @@
 
       const [html] = await Promise.all([
         responsePromise,
-        sleep(gentleMotion ? 650 : 2720)
+        sleep(gentleMotion ? 650 : 3050)
       ]);
       if (current !== serial) return;
 
