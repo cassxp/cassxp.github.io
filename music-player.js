@@ -228,14 +228,32 @@
   const pageSweep = document.createElement('div');
   pageSweep.className = 'cassxp-page-sweep';
   pageSweep.setAttribute('aria-hidden', 'true');
+  // Partículas em raios determinísticos: leve, sem vídeo, sem rede adicional.
+  const magicParticles = Array.from({length:36}, (_, i) => {
+    const angle = (i * 137.508 + 13) * Math.PI / 180;
+    const radius = 55 + (i % 7) * 22;
+    const dx = Math.round(Math.cos(angle) * radius);
+    const dy = Math.round(Math.sin(angle) * radius * .65 - (i % 5) * 8);
+    const delay = (i * 37) % 260;
+    const size = 2 + (i % 4);
+    return '<i style="--dx:'+dx+'px;--dy:'+dy+'px;--delay:'+delay+'ms;--size:'+size+'px"></i>';
+  }).join('');
   pageSweep.innerHTML = `
-    <div class="cassxp-fx-grid"></div>
-    <div class="cassxp-fx-beam"></div>
-    <div class="cassxp-fx-ident">
-      <img src="/assets/avatar.webp" alt="" width="58" height="58">
-      <div class="cassxp-fx-brand">CASS<span>XP</span></div>
-      <div class="cassxp-fx-line"></div>
-      <small>ACESSANDO</small>
+    <div class="cassxp-magic-scene">
+      <div class="cassxp-magic-aura"></div>
+      <div class="cassxp-magic-spire"></div>
+      <div class="cassxp-magic-flash"></div>
+      <div class="cassxp-magic-orbit orbit-one"></div>
+      <div class="cassxp-magic-orbit orbit-two"></div>
+      <div class="cassxp-magic-floor"></div>
+      <div class="cassxp-magic-floor floor-inner"></div>
+      <div class="cassxp-magic-core"></div>
+      <div class="cassxp-magic-particles">${magicParticles}</div>
+      <div class="cassxp-magic-sparks"></div>
+    </div>
+    <div class="cassxp-magic-caption">
+      <span>CASS<span class="cassxp-magic-xp">XP</span></span>
+      <small>ABRINDO PORTAL PARA</small>
       <strong class="cassxp-fx-destination">O UNIVERSO CASSXP</strong>
     </div>`;
   document.body.appendChild(pageSweep);
@@ -309,7 +327,7 @@
 
       const [html] = await Promise.all([
         responsePromise,
-        sleep(gentleMotion ? 180 : 430)
+        sleep(gentleMotion ? 185 : 510)
       ]);
       if (current !== serial) return;
 
@@ -343,7 +361,7 @@
       }
       if (doMotion) {
         // Pausa curta para a marca ficar visível e legível.
-        await sleep(gentleMotion ? 170 : 280);
+        await sleep(gentleMotion ? 160 : 290);
         if (current !== serial) return;
         pageSweep.classList.add('is-leaving');
         if (!gentleMotion && incoming && typeof incoming.animate === 'function') {
@@ -352,7 +370,7 @@
             {opacity:1,transform:'translateY(0)',filter:'blur(0)'}
           ], {duration:440,easing:'cubic-bezier(.18,.7,.15,1)'});
         }
-        await sleep(gentleMotion ? 230 : 530);
+        await sleep(gentleMotion ? 230 : 470);
         if (current === serial) resetPageFx();
       }
       if (location.hostname === 'cassxp.github.io' && typeof window.gtag === 'function') {
