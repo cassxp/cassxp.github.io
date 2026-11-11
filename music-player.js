@@ -281,7 +281,9 @@
   async function transition(url, push = true, onlyAnchor = false) {
     const current = ++serial;
     resetPageFx();
-    const doMotion = !reducedMotion.matches;
+    // O painel CassXP aparece sempre; em movimento reduzido faz apenas fade.
+    const doMotion = true;
+    const gentleMotion = reducedMotion.matches;
     const sameDocument = onlyAnchor || displayedRoute === url.pathname + url.search;
 
     // Inicia a transição IMEDIATAMENTE no clique, sem esperar download HTML.
@@ -307,7 +309,7 @@
 
       const [html] = await Promise.all([
         responsePromise,
-        doMotion ? sleep(365) : Promise.resolve()
+        sleep(gentleMotion ? 180 : 430)
       ]);
       if (current !== serial) return;
 
@@ -341,16 +343,16 @@
       }
       if (doMotion) {
         // Pausa curta para a marca ficar visível e legível.
-        await sleep(185);
+        await sleep(gentleMotion ? 170 : 280);
         if (current !== serial) return;
         pageSweep.classList.add('is-leaving');
-        if (incoming && typeof incoming.animate === 'function') {
+        if (!gentleMotion && incoming && typeof incoming.animate === 'function') {
           incoming.animate([
             {opacity:.35,transform:'translateY(15px)',filter:'blur(3px)'},
             {opacity:1,transform:'translateY(0)',filter:'blur(0)'}
           ], {duration:440,easing:'cubic-bezier(.18,.7,.15,1)'});
         }
-        await sleep(465);
+        await sleep(gentleMotion ? 230 : 530);
         if (current === serial) resetPageFx();
       }
       if (location.hostname === 'cassxp.github.io' && typeof window.gtag === 'function') {
