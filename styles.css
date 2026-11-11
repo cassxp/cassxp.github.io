@@ -237,3 +237,11 @@
 .vods-library-card[aria-pressed="true"] .vods-library-play{background:#8c35cc;border-color:#edcaff}
 .vods-library-card[aria-pressed="true"] .vods-library-info>span{color:#f4d8ff}
 @media (min-width:781px){.vods-library-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Botões de faixa anterior/próxima no player persistente */
+.music-prev,.music-next{display:grid;place-items:center;width:29px;height:29px;flex:none;border:1px solid rgba(178,102,229,.65);border-radius:50%;background:#271433;color:#ebd2ff;font-size:13px;line-height:1;cursor:pointer;transition:background .2s,transform .2s}
+.music-prev:hover,.music-next:hover{background:#623089;transform:scale(1.06)}
+.music-prev:focus-visible,.music-next:focus-visible{outline:2px solid #dda2ff;outline-offset:2px}
+.music-info{max-width:164px}
+.music-info strong,.music-info span{overflow:hidden;text-overflow:ellipsis}
+@media(max-width:600px){.music-player{gap:5px}.music-prev,.music-next{width:25px;height:25px;font-size:11px}.music-info{max-width:98px}}
