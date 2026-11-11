@@ -222,8 +222,9 @@
   // Em file:// a navegação completa é mantida; via HTTP(S) o mesmo áudio permanece montado.
   if (preview || !['https:', 'http:'].includes(location.protocol)) return;
 
+  // A tela da transição vive no mesmo DOM que o player: música contínua.
   let serial = 0;
-  // Efeito cinematográfico suave ao navegar, sem recriar o player de música.
+  let displayedRoute = location.pathname + location.search;
   const pageSweep = document.createElement('div');
   pageSweep.className = 'cassxp-page-sweep';
   pageSweep.setAttribute('aria-hidden', 'true');
@@ -231,7 +232,7 @@
     <div class="cassxp-fx-grid"></div>
     <div class="cassxp-fx-beam"></div>
     <div class="cassxp-fx-ident">
-      <img src="assets/avatar.webp" alt="" width="58" height="58">
+      <img src="/assets/avatar.webp" alt="" width="58" height="58">
       <div class="cassxp-fx-brand">CASS<span>XP</span></div>
       <div class="cassxp-fx-line"></div>
       <small>ACESSANDO</small>
@@ -245,94 +246,115 @@
     'contact.html':'CONTATO', 'news.html':'CLIPES'
   };
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  let leavingAnimation = null;
-  let enteringAnimation = null;
+  const sleep = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));
+
   function resetPageFx() {
-    if (leavingAnimation) { leavingAnimation.cancel(); leavingAnimation = null; }
-    if (enteringAnimation) { enteringAnimation.cancel(); enteringAnimation = null; }
-    pageSweep.classList.remove('is-active');
+    pageSweep.classList.remove('is-ready','is-covering','is-leaving');
+  }
+  function updateNav(url) {
+    const activeUrl = url.pathname.endsWith('/news.html') ? 'clips.html'
+      : url.pathname.split('/').pop() || 'index.html';
+    document.querySelectorAll('.nav a').forEach(a => {
+      a.removeAttribute('aria-current');
+      if (a.getAttribute('href') === activeUrl) a.setAttribute('aria-current', 'page');
+    });
+    document.querySelector('.nav')?.classList.remove('open');
+    document.querySelector('.menu-toggle')?.setAttribute('aria-expanded','false');
   }
   function scrollToDestination(url) {
-    // Não herda o scroll suave da página anterior durante a entrada.
     const prev = document.documentElement.style.scrollBehavior;
     document.documentElement.style.scrollBehavior = 'auto';
-    if (url.hash) {
-      let target = null;
-      try { target = document.getElementById(decodeURIComponent(url.hash.slice(1))); } catch (_) {}
-      if (target) target.scrollIntoView({block:'start', behavior:'instant'});
-      else window.scrollTo({top:0, behavior:'instant'});
-    } else {
-      window.scrollTo({top:0, behavior:'instant'});
-    }
+    try {
+      if (url.hash) {
+        const target = document.getElementById(decodeURIComponent(url.hash.slice(1)));
+        if (target) target.scrollIntoView({block:'start',behavior:'instant'});
+        else window.scrollTo({top:0,behavior:'instant'});
+      } else {
+        window.scrollTo({top:0,behavior:'instant'});
+      }
+    } catch (_) { window.scrollTo(0,0); }
     document.documentElement.style.scrollBehavior = prev;
   }
   function isInternal(url) {
     return url.origin === location.origin && routes.has(url.pathname);
   }
-  async function transition(url, push = true) {
+  async function transition(url, push = true, onlyAnchor = false) {
     const current = ++serial;
     resetPageFx();
+    const doMotion = !reducedMotion.matches;
+    const sameDocument = onlyAnchor || displayedRoute === url.pathname + url.search;
+
+    // Inicia a transição IMEDIATAMENTE no clique, sem esperar download HTML.
+    // Isso também inclui Lives/Jogos ao navegar para âncoras na mesma página.
+    if (doMotion) {
+      fxDestination.textContent = pageNames[url.pathname.split('/').pop() || 'index.html'] ||
+        (url.hash ? url.hash.slice(1).toUpperCase() : 'CASSXP');
+      if (url.hash === '#lives') fxDestination.textContent = 'LIVES';
+      if (url.hash === '#jogos') fxDestination.textContent = 'JOGOS';
+      pageSweep.classList.add('is-ready');
+      // Força o estado inicial antes da transição CSS, inclusive com cache quente.
+      void pageSweep.offsetWidth;
+      pageSweep.classList.add('is-covering');
+    }
+
     try {
-      // Busca o destino antes do fade para não deixar uma tela vazia na rede lenta.
-      const response = await fetch(url.pathname + url.search, {credentials: 'same-origin'});
-      if (!response.ok) throw new Error('Página não encontrada');
-      const html = await response.text();
+      // O fetch é simultâneo ao efeito; nunca deixa a tela branca carregando.
+      const responsePromise = sameDocument ? Promise.resolve(null)
+        : fetch(url.pathname + url.search, {credentials:'same-origin'}).then(response => {
+            if (!response.ok) throw new Error('Página não encontrada');
+            return response.text();
+          });
+
+      const [html] = await Promise.all([
+        responsePromise,
+        doMotion ? sleep(365) : Promise.resolve()
+      ]);
       if (current !== serial) return;
-      const next = new DOMParser().parseFromString(html, 'text/html');
-      const incoming = next.querySelector('main.page-main');
-      const existing = document.querySelector('main.page-main');
-      if (!incoming || !existing) throw new Error('Estrutura diferente');
 
-      const animatePage = !reducedMotion.matches && typeof existing.animate === 'function';
-      if (animatePage) {
-        // Transição do Stream Hub: painel gamer violeta, luz prata e marca CassXP.
-        fxDestination.textContent = pageNames[url.pathname.split('/').pop() || 'index.html'] || 'CASSXP';
-        pageSweep.classList.add('is-active');
-        leavingAnimation = existing.animate([
-          {opacity:1, transform:'translateY(0) scale(1)', filter:'blur(0px)'},
-          {opacity:0, transform:'translateY(-12px) scale(.986)', filter:'blur(6px)'}
-        ], {duration:205, easing:'cubic-bezier(.45,0,1,.45)', fill:'forwards'});
-        await leavingAnimation.finished.catch(() => {});
-        if (current !== serial) return;
+      let incoming = null;
+      if (!sameDocument) {
+        const next = new DOMParser().parseFromString(html, 'text/html');
+        incoming = next.querySelector('main.page-main');
+        const existing = document.querySelector('main.page-main');
+        if (!incoming || !existing) throw new Error('Estrutura da página não reconhecida');
+        existing.replaceWith(incoming);
+        document.body.className = next.body.className;
+        document.title = next.title;
+        for (const selector of [
+          'meta[name="description"]','link[rel="canonical"]',
+          'meta[property="og:title"]','meta[property="og:description"]',
+          'meta[property="og:image"]'
+        ]) {
+          const a = next.head.querySelector(selector), b = document.head.querySelector(selector);
+          if (a && b) b.replaceWith(a.cloneNode(true));
+        }
+      } else {
+        incoming = document.querySelector('main.page-main');
       }
 
-      existing.replaceWith(incoming);
-      // A página de Jade e outras áreas usam classes específicas no body.
-      document.body.className = next.body.className;
-      document.title = next.title;
-      for (const selector of ['meta[name="description"]','link[rel="canonical"]','meta[property="og:title"]','meta[property="og:description"]','meta[property="og:image"]']) {
-        const a = next.head.querySelector(selector), b = document.head.querySelector(selector);
-        if (a && b) b.replaceWith(a.cloneNode(true));
-      }
-      const activeUrl = url.pathname.endsWith('/news.html') ? 'clips.html' : url.pathname.split('/').pop() || 'index.html';
-      document.querySelectorAll('.nav a').forEach(a => {
-        a.removeAttribute('aria-current');
-        if (a.getAttribute('href') === activeUrl) a.setAttribute('aria-current', 'page');
-      });
-      document.querySelector('.nav')?.classList.remove('open');
-      document.querySelector('.menu-toggle')?.setAttribute('aria-expanded','false');
+      displayedRoute = url.pathname + url.search;
+      updateNav(url);
       if (push) history.pushState({cassxp:true},'',url.pathname+url.search+url.hash);
       scrollToDestination(url);
-      document.dispatchEvent(new CustomEvent('cassxp:pagechange', {detail:{url:url.href}}));
-
-      if (animatePage && typeof incoming.animate === 'function') {
-        enteringAnimation = incoming.animate([
-          {opacity:0, transform:'translateY(23px) scale(.986)', filter:'blur(5px)'},
-          {opacity:1, transform:'translateY(0) scale(1)', filter:'blur(0px)'}
-        ], {duration:395, easing:'cubic-bezier(.16,.75,.22,1)', fill:'both'});
-        const thisAnimation = enteringAnimation;
-        thisAnimation.finished.catch(() => {}).finally(() => {
-          if (current === serial) {
-            pageSweep.classList.remove('is-active');
-            if (enteringAnimation === thisAnimation) enteringAnimation = null;
-          }
-        });
-      } else {
-        pageSweep.classList.remove('is-active');
+      if (!sameDocument) {
+        document.dispatchEvent(new CustomEvent('cassxp:pagechange', {detail:{url:url.href}}));
       }
-      // A medição do app.js é carregada apenas no domínio oficial.
+      if (doMotion) {
+        // Pausa curta para a marca ficar visível e legível.
+        await sleep(185);
+        if (current !== serial) return;
+        pageSweep.classList.add('is-leaving');
+        if (incoming && typeof incoming.animate === 'function') {
+          incoming.animate([
+            {opacity:.35,transform:'translateY(15px)',filter:'blur(3px)'},
+            {opacity:1,transform:'translateY(0)',filter:'blur(0)'}
+          ], {duration:440,easing:'cubic-bezier(.18,.7,.15,1)'});
+        }
+        await sleep(465);
+        if (current === serial) resetPageFx();
+      }
       if (location.hostname === 'cassxp.github.io' && typeof window.gtag === 'function') {
-        window.gtag('event','page_view', {page_location:url.href, page_title:document.title});
+        window.gtag('event','page_view', {page_location:url.href,page_title:document.title});
       }
     } catch (_) {
       if (current !== serial) return;
@@ -342,21 +364,27 @@
     }
   }
   document.addEventListener('click', event => {
-    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey ||
+        event.ctrlKey || event.shiftKey || event.altKey) return;
     const link = event.target.closest && event.target.closest('a[href]');
-    if (!link || link.hasAttribute('download') || (link.target && link.target !== '_self')) return;
+    if (!link || link.hasAttribute('download') ||
+        (link.target && link.target !== '_self')) return;
     let url;
     try { url = new URL(link.href); } catch (_) { return; }
     if (!isInternal(url)) return;
-    if (url.pathname === location.pathname && url.search === location.search) {
-      if (url.hash) return;
-      event.preventDefault(); return;
+    const samePage = displayedRoute === url.pathname + url.search;
+    if (samePage && !url.hash) {
+      event.preventDefault();
+      return;
     }
+    // Âncoras dos menus ganham a transição. Botões para seções dentro da
+    // própria página continuam rolando normalmente, sem tela extra.
+    if (samePage && url.hash && !link.closest('.nav')) return;
     event.preventDefault();
-    transition(url, true);
+    transition(url, true, samePage);
   }, true);
   window.addEventListener('popstate', () => {
     const url = new URL(location.href);
-    if (isInternal(url)) transition(url, false);
+    if (isInternal(url)) transition(url, false, displayedRoute === url.pathname + url.search);
   });
 })();
