@@ -271,7 +271,7 @@
 }
 .cassxp-page-sweep.is-ready.is-covering.is-leaving{
   opacity:0;
-  transition:opacity 690ms ease-in-out;
+  transition:opacity 630ms ease-in-out;
 }
 .cassxp-arcane-canvas{
   position:absolute;inset:0;
