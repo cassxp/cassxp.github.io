@@ -85,8 +85,13 @@
       frame.src = url.toString();
       frame.title = 'VOD ' + id + ' do canal CassXP na Twitch';
       openLink.href = 'https://www.twitch.tv/videos/' + id;
-      heading.textContent = id === '2920104874' ? 'Transmissão CassXP — replay' : 'Transmissão CassXP — VOD ' + id;
-      if (scroll) section.scrollIntoView({behavior: 'smooth', block: 'start'});
+      const cards = Array.from(document.querySelectorAll('.vods-library-card[data-vod-id]'));
+      const current = cards.find(card => card.dataset.vodId === id);
+      heading.textContent = current?.dataset.vodTitle || 'Transmissão CassXP — VOD ' + id;
+      const description = document.getElementById('vod-selected-description');
+      if (description) description.textContent = current?.dataset.vodDescription || 'Gravação da Twitch selecionada pelo link.';
+      cards.forEach(card => card.setAttribute('aria-pressed', String(card === current)));
+      if (scroll && section) section.scrollIntoView({behavior: 'smooth', block: 'start'});
       return true;
     }
   
